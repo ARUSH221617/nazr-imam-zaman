@@ -3,22 +3,24 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, BookOpen, TrendingUp } from 'lucide-react'
+import { ArrowRight, Sparkles, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 
-export default function DuaKhasaPage() {
+export default function SalawatPage() {
   const { t, language, dir } = useLanguage()
   const { toast } = useToast()
   const [count, setCount] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [incrementing, setIncrementing] = useState(false)
-  const [remaining, setRemaining] = useState<number>(3)
+  const [remaining, setRemaining] = useState<number>(5)
   const [cooldown, setCooldown] = useState<number>(0)
   const [error, setError] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
+  const [substantialScroll, setSubstantialScroll] = useState(false)
 
   const locale = useMemo(() => {
     if (language === 'fa') return 'fa-IR'
@@ -37,7 +39,7 @@ export default function DuaKhasaPage() {
   // Fetch current count
   const fetchCount = async () => {
     try {
-      const response = await fetch('/api/counter?type=dua_khasa')
+      const response = await fetch('/api/counter?type=salawat')
       const data = await response.json()
       if (data.success) {
         setCount(data.count)
@@ -66,7 +68,7 @@ export default function DuaKhasaPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ type: 'dua_khasa' }),
+        body: JSON.stringify({ type: 'salawat' }),
       })
 
       const data = await response.json()
@@ -109,11 +111,18 @@ export default function DuaKhasaPage() {
     fetchCount()
   }, [])
 
+  // Enhanced scroll detection with 50% threshold
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 100)
+      const scrollY = window.scrollY
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight
+      const scrollPercentage = documentHeight > 0 ? scrollY / documentHeight : 0
+      
+      // Activate floating counter after scrolling 50% down the page
+      setSubstantialScroll(scrollPercentage > 0.5)
+      setScrolled(scrollY > 200)
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -123,7 +132,7 @@ export default function DuaKhasaPage() {
       const timer = setInterval(() => {
         setCooldown((prev) => {
           if (prev <= 1) {
-            setRemaining(3)
+            setRemaining(5)
             return 0
           }
           return prev - 1
@@ -179,10 +188,10 @@ export default function DuaKhasaPage() {
             </div>
 
             <h3 className="text-4xl md:text-6xl font-bold text-white" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-              {t.duaKhasa.title}
+              {t.salawat.title}
             </h3>
             <p className="text-lg text-teal-100" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-              {t.duaKhasa.subtitle}
+              {t.salawat.subtitle}
             </p>
           </div>
         </div>
@@ -190,52 +199,12 @@ export default function DuaKhasaPage() {
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8 md:py-16">
-        {/* Sticky Mini Counter - Shows when scrolled */}
-        {scrolled && (
-          <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg backdrop-blur-md border-b border-teal-700">
-            <div className="max-w-6xl mx-auto px-4 py-3">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  {loading ? (
-                    <div className="text-lg md:text-xl font-bold animate-pulse">...</div>
-                  ) : (
-                    <>
-                      <span className="text-lg md:text-xl font-bold">{formatNumber(count)}</span>
-                      <span className="text-sm md:text-base font-medium">{t.common.total}</span>
-                    </>
-                  )}
-                </div>
-                <Button
-                  onClick={increment}
-                  disabled={incrementing || cooldown > 0}
-                  size="sm"
-                  className="bg-white text-teal-600 hover:bg-gray-100 px-4 py-2"
-                >
-                  <BookOpen className={`h-4 w-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }} className="hidden sm:inline">
-                    {t.duaKhasa.reciteDua}
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }} className="sm:hidden">خاصة</span>
-                </Button>
-              </div>
-            </div>
-            {/* Cooldown indicator integrated in main bar */}
-            {cooldown > 0 && (
-              <div className="text-center mt-2">
-                <div className="inline-flex items-center gap-2 bg-yellow-500/20 px-3 py-1 rounded-full">
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                  <span className="text-xs font-medium text-yellow-100">
-                    {replaceVariables(t.common.cooldown, { seconds: cooldown })}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
         <div className="max-w-4xl mx-auto space-y-8">
-          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12 mb-8">
-            <div className="text-center space-y-8">
+          {/* Counter Card - Shows when at top */}
+          {!substantialScroll && (
+            <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12 mb-8 transition-all duration-300">
+              <div className="text-center space-y-8">
+              {/* Counter Display */}
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 text-teal-600 mb-4">
                   <TrendingUp className="h-6 w-6" />
@@ -273,11 +242,11 @@ export default function DuaKhasaPage() {
                     size="lg"
                     className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
                   >
-                    <BookOpen className={`h-6 w-6 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`} />
+                    <Sparkles className={`h-6 w-6 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`} />
                     <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                      {t.duaKhasa.reciteDua}
+                      {t.salawat.sendSalawat}
                     </span>
-                    <BookOpen className={`h-6 w-6 ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`} />
+                    <Sparkles className={`h-6 w-6 ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`} />
                   </Button>
 
                   {/* Error Message */}
@@ -299,23 +268,127 @@ export default function DuaKhasaPage() {
               {/* Arabic Text */}
               <div className="text-center space-y-4">
                 <p className="text-2xl md:text-4xl font-bold text-foreground leading-relaxed" style={{ fontFamily: 'var(--font-kitab)' }}>
-                  {t.duaKhasa.arabicText}
+                  {t.salawat.arabicText}
                 </p>
               </div>
             </div>
           </Card>
 
-          {/* Info Card */}
-          <Card className="bg-white border-2 border-yellow-200 p-6 md:p-8">
-            <div className="space-y-6">
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <BookOpen className="h-6 w-6 text-teal-600" />
-                <h4 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                  {t.duaKhasa.title}
-                </h4>
+          {/* Floating Counter */}
+              "fixed z-50 transition-all duration-300 ease-out",
+              substantialScroll ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+              "bottom-4 left-1/2 translate-x-[-50%] md:bottom-4 md:left-auto md:right-4 md:translate-x-0"
+            )}>
+              {/* Glass morphism design */}
+              <div className="bg-gradient-to-r from-teal-600/90 via-cyan-600/90 to-teal-600/90 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-2xl p-4">
+                <div className="flex items-center justify-between gap-4">
+                  {/* Counter display */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-white">{formatNumber(count)}</span>
+                    <span className="text-sm text-white/80">{t.common.total}</span>
+                  </div>
+                  {/* Action button */}
+                  <Button
+                    onClick={increment}
+                    disabled={incrementing || cooldown > 0}
+                    size="sm"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {t.salawat.sendSalawat}
+                    </span>
+                  </Button>
+                </div>
+                {/* Cooldown indicator */}
+                {cooldown > 0 && (
+                  <div className="text-center text-xs text-orange-200 mt-2 animate-pulse">
+                    <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {replaceVariables(t.common.cooldown, { seconds: cooldown })}
+                    </span>
+                  </div>
+                )}
               </div>
+            </div>
+          )}
+
+          {/* Info Card */}
+          <Card className="bg-white border-2 border-yellow-200 p-6">
+            <div className="text-center space-y-4">
+              <h4 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                {t.salawat.about}
+              </h4>
               <p className="text-muted-foreground leading-relaxed" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                {t.duaKhasa.description}
+                {t.salawat.description}
+              </p>
+            </div>
+          </Card>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gradient-to-br from-teal-900 to-cyan-900 text-white py-6">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-2">
+            <p className="text-sm" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+              {t.common.footer.prayer}
+            </p>
+            <p className="text-xs text-teal-200" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+              {replaceVariables(t.common.footer.copyright, { year: new Date().getFullYear() })}
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}          {/* Floating Counter */}
+          {substantialScroll && (
+            <div className={cn(
+              "fixed z-50 transition-all duration-300 ease-out",
+              substantialScroll ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+              "bottom-4 left-1/2 translate-x-[-50%] md:bottom-4 md:left-auto md:right-4 md:translate-x-0"
+            )}>
+              {/* Glass morphism design */}
+              <div className="bg-gradient-to-r from-teal-600/90 via-cyan-600/90 to-teal-600/90 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-2xl p-4">
+                <div className="flex items-center justify-between gap-4">
+                  {/* Counter display */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-white">{formatNumber(count)}</span>
+                    <span className="text-sm text-white/80">{t.common.total}</span>
+                  </div>
+                  {/* Action button */}
+                  <Button
+                    onClick={increment}
+                    disabled={incrementing || cooldown > 0}
+                    size="sm"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {t.salawat.sendSalawat}
+                    </span>
+                  </Button>
+                </div>
+                {/* Cooldown indicator */}
+                {cooldown > 0 && (
+                  <div className="text-center text-xs text-orange-200 mt-2 animate-pulse">
+                    <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {replaceVariables(t.common.cooldown, { seconds: cooldown })}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Info Card */}
+          <Card className="bg-white border-2 border-yellow-200 p-6">
+            <div className="text-center space-y-4">
+              <h4 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                {t.salawat.about}
+              </h4>
+              <p className="text-muted-foreground leading-relaxed" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                {t.salawat.description}
               </p>
             </div>
           </Card>
