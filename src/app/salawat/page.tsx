@@ -18,6 +18,7 @@ export default function SalawatPage() {
   const [remaining, setRemaining] = useState<number>(5)
   const [cooldown, setCooldown] = useState<number>(0)
   const [error, setError] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
 
   const locale = useMemo(() => {
     if (language === 'fa') return 'fa-IR'
@@ -86,10 +87,10 @@ export default function SalawatPage() {
         if (data.remaining === 0) {
           const cooldownSeconds = Math.ceil((data.resetTime - Date.now()) / 1000)
           setCooldown(cooldownSeconds)
-          // Show toast notification when hitting the limit
+          // Show toast notification when hitting limit
           toast({
             title: t.common.error.rateLimit,
-            description: replaceVariables(t.common.cooldown, { seconds: cooldownSeconds }),
+            description: t.common.error.rateLimitMessage,
             variant: "default",
           })
         }
@@ -106,6 +107,14 @@ export default function SalawatPage() {
 
   useEffect(() => {
     fetchCount()
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   // Cooldown timer
@@ -181,9 +190,48 @@ export default function SalawatPage() {
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8 md:py-16">
+        {/* Sticky Mini Counter - Shows when scrolled */}
+        {scrolled && (
+          <div className="sticky top-16 z-10 bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4 mb-8 shadow-lg backdrop-blur-sm bg-opacity-95">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  {loading ? (
+                    <div className="text-xl md:text-2xl font-bold animate-pulse">...</div>
+                  ) : (
+                    <>
+                      <span className="text-xl md:text-2xl font-bold">{formatNumber(count)}</span>
+                      <span className="text-sm md:text-base font-semibold">{t.common.total}</span>
+                    </>
+                  )}
+                </div>
+                <Button
+                  onClick={increment}
+                  disabled={incrementing || cooldown > 0}
+                  size="sm"
+                  className="bg-white text-teal-600 hover:bg-gray-100"
+                >
+                  <Sparkles className={`h-4 w-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                    {t.salawat.sendSalawat}
+                  </span>
+                </Button>
+              </div>
+              {/* Cooldown indicator for sticky version */}
+              {cooldown > 0 && (
+                <div className="flex items-center justify-center gap-2 text-sm text-orange-200 animate-pulse mt-2">
+                  <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                    {replaceVariables(t.common.cooldown, { seconds: cooldown })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Counter Card */}
-          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12">
+          {/* Counter Card - Shows when at top */}
+          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12 mb-8">
             <div className="text-center space-y-8">
               {/* Counter Display */}
               <div className="space-y-4">
@@ -215,27 +263,29 @@ export default function SalawatPage() {
               </div>
 
               {/* Action Button */}
-              <div className="space-y-4">
-                <Button
-                  onClick={increment}
-                  disabled={incrementing || cooldown > 0}
-                  size="lg"
-                  className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-                >
-                  <Sparkles className={`h-6 w-6 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`} />
-                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                    {t.salawat.sendSalawat}
-                  </span>
-                  <Sparkles className={`h-6 w-6 ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`} />
-                </Button>
+              {!scrolled && (
+                <div className="space-y-4">
+                  <Button
+                    onClick={increment}
+                    disabled={incrementing || cooldown > 0}
+                    size="lg"
+                    className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+                  >
+                    <Sparkles className={`h-6 w-6 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`} />
+                    <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {t.salawat.sendSalawat}
+                    </span>
+                    <Sparkles className={`h-6 w-6 ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`} />
+                  </Button>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                    {error}
-                  </div>
-                )}
-              </div>
+                  {/* Error Message */}
+                  {error && (
+                    <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {error}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Decorative Divider */}
               <div className="flex items-center justify-center gap-4">

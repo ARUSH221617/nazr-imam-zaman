@@ -18,6 +18,7 @@ export default function DuaKhasaPage() {
   const [remaining, setRemaining] = useState<number>(3)
   const [cooldown, setCooldown] = useState<number>(0)
   const [error, setError] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
 
   const locale = useMemo(() => {
     if (language === 'fa') return 'fa-IR'
@@ -33,6 +34,7 @@ export default function DuaKhasaPage() {
     return result
   }
 
+  // Fetch current count
   const fetchCount = async () => {
     try {
       const response = await fetch('/api/counter?type=dua_khasa')
@@ -47,6 +49,7 @@ export default function DuaKhasaPage() {
     }
   }
 
+  // Increment counter
   const increment = async () => {
     if (cooldown > 0) {
       setError(t.common.error.rateLimit)
@@ -84,7 +87,7 @@ export default function DuaKhasaPage() {
         if (data.remaining === 0) {
           const cooldownSeconds = Math.ceil((data.resetTime - Date.now()) / 1000)
           setCooldown(cooldownSeconds)
-          // Show toast notification when hitting the limit
+          // Show toast notification when hitting limit
           toast({
             title: t.common.error.rateLimit,
             description: t.common.error.rateLimitMessage,
@@ -107,6 +110,15 @@ export default function DuaKhasaPage() {
   }, [])
 
   useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Cooldown timer
+  useEffect(() => {
     if (cooldown > 0) {
       const timer = setInterval(() => {
         setCooldown((prev) => {
@@ -121,6 +133,7 @@ export default function DuaKhasaPage() {
     }
   }, [cooldown])
 
+  // Auto refresh count every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       fetchCount()
@@ -134,6 +147,7 @@ export default function DuaKhasaPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Header */}
       <header className="bg-gradient-to-br from-teal-900 via-cyan-800 to-teal-900 text-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-6">
@@ -174,9 +188,49 @@ export default function DuaKhasaPage() {
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8 md:py-16">
+        {/* Sticky Mini Counter - Shows when scrolled */}
+        {scrolled && (
+          <div className="sticky top-16 z-10 bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4 mb-8 shadow-lg backdrop-blur-sm bg-opacity-95">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  {loading ? (
+                    <div className="text-xl md:text-2xl font-bold animate-pulse">...</div>
+                  ) : (
+                    <>
+                      <span className="text-xl md:text-2xl font-bold">{formatNumber(count)}</span>
+                      <span className="text-sm md:text-base font-semibold">{t.common.total}</span>
+                    </>
+                  )}
+                </div>
+                <Button
+                  onClick={increment}
+                  disabled={incrementing || cooldown > 0}
+                  size="sm"
+                  className="bg-white text-teal-600 hover:bg-gray-100"
+                >
+                  <BookOpen className={`h-4 w-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                    {t.duaKhasa.reciteDua}
+                  </span>
+                </Button>
+              </div>
+              {/* Cooldown indicator for sticky version */}
+              {cooldown > 0 && (
+                <div className="flex items-center justify-center gap-2 text-sm text-orange-200 animate-pulse mt-2">
+                  <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                    {replaceVariables(t.common.cooldown, { seconds: cooldown })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="max-w-4xl mx-auto space-y-8">
-          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12">
+          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12 mb-8">
             <div className="text-center space-y-8">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 text-teal-600 mb-4">
@@ -206,35 +260,48 @@ export default function DuaKhasaPage() {
                 )}
               </div>
 
-              <div className="space-y-4">
-                <Button
-                  onClick={increment}
-                  disabled={incrementing || cooldown > 0}
-                  size="lg"
-                  className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-                >
-                  <BookOpen className={`h-6 w-6 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`} />
-                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                    {t.duaKhasa.reciteDua}
-                  </span>
-                  <BookOpen className={`h-6 w-6 ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`} />
-                </Button>
+              {/* Action Button */}
+              {!scrolled && (
+                <div className="space-y-4">
+                  <Button
+                    onClick={increment}
+                    disabled={incrementing || cooldown > 0}
+                    size="lg"
+                    className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+                  >
+                    <BookOpen className={`h-6 w-6 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`} />
+                    <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {t.duaKhasa.reciteDua}
+                    </span>
+                    <BookOpen className={`h-6 w-6 ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`} />
+                  </Button>
 
-                {error && (
-                  <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                    {error}
-                  </div>
-                )}
-              </div>
+                  {/* Error Message */}
+                  {error && (
+                    <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {error}
+                    </div>
+                  )}
+                </div>
+              )}
 
+              {/* Decorative Divider */}
               <div className="flex items-center justify-center gap-4">
                 <div className="h-px w-24 bg-gradient-to-r from-transparent via-teal-400 to-transparent"></div>
                 <div className="w-2 h-2 rounded-full bg-teal-400"></div>
                 <div className="h-px w-24 bg-gradient-to-r from-transparent via-teal-400 to-transparent"></div>
               </div>
+
+              {/* Arabic Text */}
+              <div className="text-center space-y-4">
+                <p className="text-2xl md:text-4xl font-bold text-foreground leading-relaxed" style={{ fontFamily: 'var(--font-kitab)' }}>
+                  {t.duaKhasa.arabicText}
+                </p>
+              </div>
             </div>
           </Card>
 
+          {/* Info Card */}
           <Card className="bg-white border-2 border-yellow-200 p-6 md:p-8">
             <div className="space-y-6">
               <div className="flex items-center justify-center gap-2 mb-6">
@@ -242,32 +309,16 @@ export default function DuaKhasaPage() {
                 <h4 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
                   {t.duaKhasa.title}
                 </h4>
-                <BookOpen className="h-6 w-6 text-teal-600" />
               </div>
-
-              <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-lg p-6 md:p-8">
-                <p className="text-xl md:text-2xl font-bold text-foreground leading-loose text-right mb-6 whitespace-pre-line" style={{ fontFamily: 'var(--font-kitab)', direction: 'rtl' }}>
-                  {t.duaKhasa.arabicText}
-                </p>
-
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-teal-400 to-transparent my-6"></div>
-
-                <div className="text-muted-foreground leading-relaxed">
-                  <p className="mb-4 font-semibold text-sm">Translation | ترجمه:</p>
-                  <p className="text-base md:text-lg whitespace-pre-line">{t.duaKhasa.translation}</p>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <p className="text-muted-foreground leading-relaxed" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                  {t.duaKhasa.description}
-                </p>
-              </div>
+              <p className="text-muted-foreground leading-relaxed" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                {t.duaKhasa.description}
+              </p>
             </div>
           </Card>
         </div>
       </main>
 
+      {/* Footer */}
       <footer className="bg-gradient-to-br from-teal-900 to-cyan-900 text-white py-6">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-2">
