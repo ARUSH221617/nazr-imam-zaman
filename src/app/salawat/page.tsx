@@ -7,9 +7,11 @@ import { ArrowRight, Sparkles, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useToast } from '@/hooks/use-toast'
 
 export default function SalawatPage() {
   const { t, language, dir } = useLanguage()
+  const { toast } = useToast()
   const [count, setCount] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [incrementing, setIncrementing] = useState(false)
@@ -72,11 +74,24 @@ export default function SalawatPage() {
         setError(t.common.error.rateLimit)
         setRemaining(data.remaining)
         setCooldown(Math.ceil((data.resetTime - Date.now()) / 1000))
+        // Show toast notification for rate limit
+        toast({
+          title: t.common.error.rateLimit,
+          description: t.common.error.rateLimitMessage,
+          variant: "default",
+        })
       } else if (data.success) {
         setCount(data.count)
         setRemaining(data.remaining)
         if (data.remaining === 0) {
-          setCooldown(Math.ceil((data.resetTime - Date.now()) / 1000))
+          const cooldownSeconds = Math.ceil((data.resetTime - Date.now()) / 1000)
+          setCooldown(cooldownSeconds)
+          // Show toast notification when hitting the limit
+          toast({
+            title: t.common.error.rateLimit,
+            description: replaceVariables(t.common.cooldown, { seconds: cooldownSeconds }),
+            variant: "default",
+          })
         }
       } else {
         setError(data.error || t.common.error.increment)
@@ -190,16 +205,13 @@ export default function SalawatPage() {
                 )}
 
                 {/* Rate Limit Indicator */}
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                    {cooldown > 0
-                      ? replaceVariables(t.common.cooldown, { seconds: cooldown })
-                      : replaceVariables(t.common.remainingRequests, { count: remaining })
-                    }
-                  </span>
-                  <span>|</span>
-                  <span>Cooldown: {cooldown > 0 ? `${cooldown}s` : t.common.ready}</span>
-                </div>
+                {cooldown > 0 && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-orange-600 animate-pulse">
+                    <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                      {replaceVariables(t.common.cooldown, { seconds: cooldown })}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Action Button */}

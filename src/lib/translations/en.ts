@@ -13,7 +13,8 @@ export const en = {
     remainingRequests: 'Remaining: {{count}} requests',
     ready: 'Ready',
     error: {
-      rateLimit: 'Please wait a moment',
+      rateLimit: 'Rate limit reached',
+      rateLimitMessage: 'Please wait before sending more prayers',
       connection: 'Server connection error',
       increment: 'Error incrementing counter',
     },

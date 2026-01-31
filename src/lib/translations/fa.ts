@@ -13,7 +13,8 @@ export const fa = {
     remainingRequests: 'امکان ارسال: {{count}} بار',
     ready: 'آماده',
     error: {
-      rateLimit: 'لطفاً کمی صبر کنید',
+      rateLimit: 'محدودیت تعداد دعاها',
+      rateLimitMessage: 'لطفاً قبل از ارسال دعاهای بیشتر کمی صبر کنید',
       connection: 'خطا در ارتباط با سرور',
       increment: 'خطا در افزایش شمارنده',
     },

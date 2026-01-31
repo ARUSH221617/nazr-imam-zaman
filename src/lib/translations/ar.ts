@@ -13,7 +13,8 @@ export const ar = {
     remainingRequests: 'متبقي: {{count}} مرات',
     ready: 'جاهز',
     error: {
-      rateLimit: 'الرجاء الانتظار قليلاً',
+      rateLimit: 'تم الوصول إلى الحد الأقصى',
+      rateLimitMessage: 'يرجى الانتظار قبل إرسال المزيد من الصلوات',
       connection: 'خطأ في الاتصال بالخادم',
       increment: 'خطأ في زيادة العداد',
     },
