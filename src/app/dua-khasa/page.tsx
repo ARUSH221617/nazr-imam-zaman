@@ -192,16 +192,16 @@ export default function DuaKhasaPage() {
       <main className="flex-1 container mx-auto px-4 py-8 md:py-16">
         {/* Sticky Mini Counter - Shows when scrolled */}
         {scrolled && (
-          <div className="sticky top-16 z-10 bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4 mb-8 shadow-lg backdrop-blur-sm bg-opacity-95">
-            <div className="container mx-auto px-4">
+          <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg backdrop-blur-md border-b border-teal-700">
+            <div className="max-w-6xl mx-auto px-4 py-3">
               <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   {loading ? (
-                    <div className="text-xl md:text-2xl font-bold animate-pulse">...</div>
+                    <div className="text-lg md:text-xl font-bold animate-pulse">...</div>
                   ) : (
                     <>
-                      <span className="text-xl md:text-2xl font-bold">{formatNumber(count)}</span>
-                      <span className="text-sm md:text-base font-semibold">{t.common.total}</span>
+                      <span className="text-lg md:text-xl font-bold">{formatNumber(count)}</span>
+                      <span className="text-sm md:text-base font-medium">{t.common.total}</span>
                     </>
                   )}
                 </div>
@@ -209,23 +209,27 @@ export default function DuaKhasaPage() {
                   onClick={increment}
                   disabled={incrementing || cooldown > 0}
                   size="sm"
-                  className="bg-white text-teal-600 hover:bg-gray-100"
+                  className="bg-white text-teal-600 hover:bg-gray-100 px-4 py-2"
                 >
                   <BookOpen className={`h-4 w-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }} className="hidden sm:inline">
                     {t.duaKhasa.reciteDua}
                   </span>
+                  <span style={{ fontFamily: 'var(--font-vazirmatn)' }} className="sm:hidden">خاصة</span>
                 </Button>
               </div>
-              {/* Cooldown indicator for sticky version */}
-              {cooldown > 0 && (
-                <div className="flex items-center justify-center gap-2 text-sm text-orange-200 animate-pulse mt-2">
-                  <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
+            </div>
+            {/* Cooldown indicator integrated in main bar */}
+            {cooldown > 0 && (
+              <div className="text-center mt-2">
+                <div className="inline-flex items-center gap-2 bg-yellow-500/20 px-3 py-1 rounded-full">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium text-yellow-100">
                     {replaceVariables(t.common.cooldown, { seconds: cooldown })}
                   </span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
