@@ -42,7 +42,7 @@ export default function SalawatPage() {
   // Fetch current count
   const fetchCount = async () => {
     try {
-      const response = await fetch("/api/counter?type=salawat");
+      const response = await fetch("/api/counter?type=dua_khasa");
       const data = await response.json();
       if (data.success) {
         setCount(data.count);
@@ -71,7 +71,7 @@ export default function SalawatPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ type: "salawat" }),
+        body: JSON.stringify({ type: "dua_khasa" }),
       });
 
       const data = await response.json();
