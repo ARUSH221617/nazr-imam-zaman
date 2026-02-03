@@ -33,13 +33,13 @@ export const en = {
       title: 'Salawat',
       description: 'Send blessings upon the Prophet and his family',
     },
-    duaFaraj: {
-      title: 'Dua Faraj',
-      description: 'Prayer for the reappearance of Imam Mahdi',
+    duaSalamati: {
+      title: 'Dua Salamati',
+      description: 'Prayer "Allahumma Kun Li-waliyyik" for the safety of Imam Mahdi (AJ)',
     },
-    duaKhasa: {
-      title: 'Special Dua',
-      description: 'Special prayer dedicated to Imam Mahdi',
+    duaFaraj: {
+      title: 'Dua Faraj (Ilahi Azuma\'l Bala)',
+      description: 'Prayer "Ilahi Azuma\'l Bala" for relief from hardships',
     },
   },
   salawat: {
@@ -55,35 +55,41 @@ export const en = {
     rateLimitToast: 'Rate limit reduced! Please wait {seconds} seconds. {remaining} attempts remaining',
     floatingTitle: 'Salawat',
   },
-  duaFaraj: {
-    title: 'Dua Faraj',
-    subtitle: 'Dua Faraj - Prayer for the Reappearance of Imam Mahdi',
-    reciteDua: 'Recite Dua Faraj',
-    about: 'About Dua Faraj',
-    description: 'This powerful dua is recited to hasten the reappearance of Imam al-Mahdi (may Allah hasten his noble return). It expresses devotion and supplication for the guidance and protection of the Imam during his occultation.',
+  duaSalamati: {
+    title: 'Dua Salamati (Allahumma Kun Li-waliyyik)',
+    subtitle: 'Dua Salamati - Prayer for the Safety of Imam Mahdi (AJ)',
+    reciteDua: 'Recite Dua Salamati',
+    about: 'About Dua Salamati',
+    description: 'This powerful prayer (Allahumma Kun Li-waliyyik) is recited for the safety and protection of Imam Mahdi (AJ) during his occultation. It expresses the believer\'s deep connection and loyalty to the Imam of our time.',
     arabicText: `اَللّٰهُمَّ كُنْ لِوَلِیِّكَ الْحُجَّةِ بْنِ الْحَسَنِ صَلَواتُكَ عَلَیْهِ وَعَلى آبائِهِ فِی هٰذِهِ السّاعَةِ وَفی کُلِّ ساعَةٍ وَلیًّا وَحافِظاً وَقائِداً وَناصِراً وَدَلیلاً وَعَیْناً حَتّى تُسْكِنَهُ أَرْضَكَ طَوْعاً وَتُمَتِّعَهُ فیها طَویلاً. اَللّٰهُمَّ صَلِّ عَلَی مُحَمَّدٍ وَآلِ مُحَمَّدٍ`,
     translation: `O Allah, be, for Your representative, the Hujjah (proof), son of Hasan, Your blessings be on him and his forefathers, in this hour and in every hour, a guardian, a protector, a leader, a guide, a witness, and a proof, until You make him reside on Your earth, by Your command, and make him enjoy it for a long time. O Allah, send blessings upon Muhammad and the family of Muhammad.`,
   },
-  duaKhasa: {
-    title: 'Special Dua',
-    subtitle: 'Special Dua - Prayer dedicated to Imam Mahdi',
-    reciteDua: 'Recite Special Dua',
-    about: 'About Special Dua',
-    description: 'This special dua is dedicated to Imam al-Mahdi (may Allah hasten his noble return). It is a heartfelt supplication seeking relief, guidance, and protection for the Imam and all believers during the period of occultation.',
-    arabicText: `اَللّٰهُمَّ یامَنْ لایَخْفی عَلَیْهِ شَیْءٌ فِی الْأَرْضِ وَلَا فِی السَّماءِ
-اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَآلِ مُحَمَّدٍ وَعَجِّلْ فَرَجَهُمْ
-اَللّٰهُمَّ اكْشِفْ عَنْهُمُ الْغُمُومَ وَالْهُمُومَ
-وَاصْرِفْ عَنْهُمُ السُّوءَ وَاللَّغْطَ
-وَاجْعَلْ لَهُمْ مِنْ كُلِّ ضِيقٍ مَخْرَجاً
-وَمِنْ كُلِّ فَرَجٍ سَبَباً
-یاأَرْحَمَ الرّاحِمینَ`,
-    translation: `O Allah, He from Whom nothing is hidden in the earth and in the heavens
-O Allah, send blessings upon Muhammad and the family of Muhammad, and hasten their relief
-O Allah, remove from them sorrows and anxieties
-And turn away from them evil and confusion
-And make for them a way out from every distress
-And a cause from every relief
-O Most Merciful of the merciful`,
+  duaFaraj: {
+    title: 'Dua Faraj (Ilahi Azuma\'l Bala)',
+    subtitle: 'Dua Faraj - Prayer for intercession and immediate relief',
+    reciteDua: 'Recite Dua Faraj',
+    about: 'Benefits of Dua Faraj',
+    description: 'This great prayer (Ilahi Azuma\'l Bala) is recited for relief from severe hardships and calamities. It seeks the intercession of Prophet Muhammad (PBUH) and Imam Ali (AS) and the support of Imam Mahdi (AJ) for immediate relief and divine assistance in the most difficult circumstances.',
+    arabicText: `اِلهى عَظُمَ الْبَلاَّءُ وَ بَرِحَ الْخَفاَّءُ
+وَانْکَشَفَ الْغِطاَّءُ وَانْقَطَعَ الرَّجاَّءُ
+وَ ضاقَتِ الاْرْضُ وَ مُنِعَتِ السَّماَّءُ و
+اَنْتَ الْمُسْتَعانُ وَ اِلَیْکَ الْمُشْتَکى
+وَ عَلَیْکَ الْمُعَوَّلُ فِى الشِّدَّةِ وَالرَّخاَّءِ
+اَللّهُمَّ صَلِّ عَلى مُحَمَّدٍ وَ آلِ مُحَمَّدٍ
+اُولِى الاْمْرِ الَّذینَ فَرَضْتَ عَلَیْنا طاعَتَهُمْ
+وَ عَرَّفْتَنا بِذلِکَ مَنْزِلَتَهُمْ فَفَرِّجْ عَنا
+بِحَقِّهِمْ فَرَجاً عاجِلا قَریباً کَلَمْحِ الْبَصَرِ
+أَوْ هُوَ أَقْرَبُ
+یَا مُحَمَّدُ یَا عَلِیُّ
+یَا عَلِیُّ یَا مُحَمَّدُ اکْفِیانِی فَإِنَّکُما کافِیانِ
+وَانْصُرانِی فَإِنَّکُما ناصِرانِ
+یَا مَوْلانا یَا صاحِبَ الزَّمانِ
+الْغَوْثَ الْغَوْثَ الْغَوْثَ
+أَدْرِکْنِی أَدْرِکْنِی أَدْرِکْنِی
+السَّاعَةَ السَّاعَةَ السّاعَةَ
+الْعَجَلَ الْعَجَلَ الْعَجَلَ
+یَا أَرْحَمَ الرَّاحِمِینَ بِحَقِّ مُحَمَّدٍ وَآلِهِ الطَّاهِرِینَ`,
+    translation: `O Allah! Great has become the calamity, and the secret has been revealed, and the cover has been lifted, and hope has been cut off, and the earth has become narrow and the sky has been withheld. And You are the One whose help is sought, and to You is the complaint, and upon You is the reliance in hardship and ease. O Allah, send blessings upon Muhammad and the family of Muhammad, the masters of the affair whose obedience You have made obligatory upon us and thus made us know their status. So grant us relief for their sake, a relief that is immediate and near, like the blink of an eye or even closer. O Muhammad! O Ali! O Ali! O Muhammad! Suffice me both of you, for you both are sufficient. And help me both of you, for you both are helpers. O our master! O Master of the Time! Help! Help! Help! Reach me! Reach me! Reach me! This hour! This hour! This hour! Hasten! Hasten! Hasten! O Most Merciful of the merciful, for the sake of Muhammad and his pure family.`,
   },
 } as const
 
