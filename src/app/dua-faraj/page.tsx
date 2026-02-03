@@ -152,7 +152,10 @@ export default function DuaFarajPage() {
   // Auto refresh count every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchCount();
+      // Only fetch if the tab is visible to save resources
+      if (document.visibilityState === "visible") {
+        fetchCount();
+      }
     }, 10000);
     return () => clearInterval(interval);
   }, []);

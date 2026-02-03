@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { salawatRateLimiter, duaRateLimiter, getIdentifier } from '@/lib/rate-limit'
 
+// In-memory cache for counter values to reduce database load
+// TTL of 1 second is enough to deduplicate requests from multiple users
+// while keeping the counter reasonably fresh.
+const counterCache = new Map<string, { count: number; timestamp: number }>()
+const CACHE_TTL = 1000 // 1 second
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -47,6 +53,9 @@ export async function POST(request: NextRequest) {
       data: { count: { increment: 1 } },
     })
 
+    // Update cache with the new value
+    counterCache.set(type, { count: counter.count, timestamp: Date.now() })
+
     // Record user action (optional, for analytics)
     await db.userAction.create({
       data: {
@@ -85,7 +94,17 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get counter value
+    // Check cache first
+    const now = Date.now()
+    const cached = counterCache.get(type)
+    if (cached && now - cached.timestamp < CACHE_TTL) {
+      return NextResponse.json({
+        success: true,
+        count: cached.count,
+      })
+    }
+
+    // Get counter value from database
     const counter = await db.counter.findUnique({
       where: { name: type },
     })
@@ -96,6 +115,9 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       )
     }
+
+    // Update cache
+    counterCache.set(type, { count: counter.count, timestamp: now })
 
     return NextResponse.json({
       success: true,
