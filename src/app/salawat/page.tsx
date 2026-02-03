@@ -1,168 +1,32 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { cn, replaceVariables, getLocale, formatNumber } from "@/lib/utils";
+import { useCounter } from "@/hooks/useCounter";
+import { useScrollDetection } from "@/hooks/useScrollDetection";
 
 export default function SalawatPage() {
   const { t, language, dir } = useLanguage();
-  const { toast } = useToast();
-  const [count, setCount] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [incrementing, setIncrementing] = useState(false);
-  const [remaining, setRemaining] = useState<number>(5);
-  const [cooldown, setCooldown] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [substantialScroll, setSubstantialScroll] = useState(false);
 
-  const locale = useMemo(() => {
-    if (language === "fa") return "fa-IR";
-    if (language === "ar") return "ar-SA";
-    return "en-US";
-  }, [language]);
+  // Use custom hooks
+  const {
+    count,
+    loading,
+    incrementing,
+    cooldown,
+    error,
+    increment,
+  } = useCounter("salawat", 5);
 
-  const replaceVariables = (
-    text: string,
-    variables: Record<string, string | number>,
-  ): string => {
-    let result = text;
-    Object.entries(variables).forEach(([key, value]) => {
-      result = result.replace(new RegExp(`{{${key}}}`, "g"), String(value));
-    });
-    return result;
-  };
+  const { scrolled, substantialScroll } = useScrollDetection();
 
-  // Fetch current count
-  const fetchCount = async () => {
-    try {
-      const response = await fetch("/api/counter?type=salawat");
-      const data = await response.json();
-      if (data.success) {
-        setCount(data.count);
-      }
-    } catch (error) {
-      console.error("Error fetching count:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Increment counter
-  const increment = async () => {
-    if (cooldown > 0) {
-      setError(t.common.error.rateLimit);
-      setTimeout(() => setError(null), 2000);
-      return;
-    }
-
-    setIncrementing(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/counter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ type: "salawat" }),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 429) {
-        setError(t.common.error.rateLimit);
-        setRemaining(data.remaining);
-        setCooldown(Math.ceil((data.resetTime - Date.now()) / 1000));
-        // Show toast notification for rate limit
-        toast({
-          title: t.common.error.rateLimit,
-          description: t.common.error.rateLimitMessage,
-          variant: "default",
-        });
-      } else if (data.success) {
-        setCount(data.count);
-        setRemaining(data.remaining);
-        if (data.remaining === 0) {
-          const cooldownSeconds = Math.ceil(
-            (data.resetTime - Date.now()) / 1000,
-          );
-          setCooldown(cooldownSeconds);
-          // Show toast notification when hitting limit
-          toast({
-            title: t.common.error.rateLimit,
-            description: t.common.error.rateLimitMessage,
-            variant: "default",
-          });
-        }
-      } else {
-        setError(data.error || t.common.error.increment);
-      }
-    } catch (error) {
-      setError(t.common.error.connection);
-      console.error("Error incrementing counter:", error);
-    } finally {
-      setIncrementing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCount();
-  }, []);
-
-  // Enhanced scroll detection with 50% threshold
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const documentHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercentage =
-        documentHeight > 0 ? scrollY / documentHeight : 0;
-
-      // Activate floating counter after scrolling 30% down the page
-      setSubstantialScroll(scrollPercentage > 0.3);
-      setScrolled(scrollY > 200);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Cooldown timer
-  useEffect(() => {
-    if (cooldown > 0) {
-      const timer = setInterval(() => {
-        setCooldown((prev) => {
-          if (prev <= 1) {
-            setRemaining(5);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [cooldown]);
-
-  // Auto refresh count every 10 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Only fetch if the tab is visible to save resources
-      if (document.visibilityState === "visible") {
-        fetchCount();
-      }
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatNumber = (num: number): string => {
-    return num.toLocaleString(locale);
-  };
+  const locale = useMemo(() => getLocale(language), [language]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -250,7 +114,7 @@ export default function SalawatPage() {
                       </div>
                     ) : (
                       <div className="text-6xl md:text-8xl font-bold text-teal-700 transition-all duration-300">
-                        {formatNumber(count)}
+                        {formatNumber(count, locale)}
                       </div>
                     )}
 
@@ -351,7 +215,7 @@ export default function SalawatPage() {
                   {/* Counter display */}
                   <div className="flex items-center gap-2">
                     <span className="text-xl font-bold text-white">
-                      {formatNumber(count)}
+                      {formatNumber(count, locale)}
                     </span>
                     <span className="text-sm text-white/80">
                       {t.common.total}
