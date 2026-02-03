@@ -3,20 +3,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Heart, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-export default function SalawatPage() {
+export default function DuaSalamatiPage() {
   const { t, language, dir } = useLanguage();
   const { toast } = useToast();
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [incrementing, setIncrementing] = useState(false);
-  const [remaining, setRemaining] = useState<number>(5);
+  const [remaining, setRemaining] = useState<number>(3);
   const [cooldown, setCooldown] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -42,7 +42,7 @@ export default function SalawatPage() {
   // Fetch current count
   const fetchCount = async () => {
     try {
-      const response = await fetch("/api/counter?type=dua_khasa");
+      const response = await fetch("/api/counter?type=dua_faraj");
       const data = await response.json();
       if (data.success) {
         setCount(data.count);
@@ -71,7 +71,7 @@ export default function SalawatPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ type: "dua_khasa" }),
+        body: JSON.stringify({ type: "dua_faraj" }),
       });
 
       const data = await response.json();
@@ -139,7 +139,7 @@ export default function SalawatPage() {
       const timer = setInterval(() => {
         setCooldown((prev) => {
           if (prev <= 1) {
-            setRemaining(5);
+            setRemaining(3);
             return 0;
           }
           return prev - 1;
@@ -209,13 +209,13 @@ export default function SalawatPage() {
               className="text-4xl md:text-6xl font-bold text-white"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {t.salawat.title}
+              {t.duaSalamati.title}
             </h3>
             <p
               className="text-lg text-teal-100"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {t.salawat.subtitle}
+              {t.duaSalamati.subtitle}
             </p>
           </div>
         </div>
@@ -267,36 +267,34 @@ export default function SalawatPage() {
                   </div>
 
                   {/* Action Button */}
-                  {!scrolled && (
-                    <div className="space-y-4">
-                      <Button
-                        onClick={increment}
-                        disabled={incrementing || cooldown > 0}
-                        size="lg"
-                        className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-linear-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-                      >
-                        <Sparkles
-                          className={`h-6 w-6 ${dir === "rtl" ? "ml-3" : "mr-3"}`}
-                        />
-                        <span style={{ fontFamily: "var(--font-vazirmatn)" }}>
-                          {t.salawat.sendSalawat}
-                        </span>
-                        <Sparkles
-                          className={`h-6 w-6 ${dir === "rtl" ? "mr-3" : "ml-3"}`}
-                        />
-                      </Button>
+                  <div className="space-y-4">
+                    <Button
+                      onClick={increment}
+                      disabled={incrementing || cooldown > 0}
+                      size="lg"
+                      className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-linear-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+                    >
+                      <Heart
+                        className={`h-6 w-6 ${dir === "rtl" ? "ml-3" : "mr-3"}`}
+                      />
+                      <span style={{ fontFamily: "var(--font-vazirmatn)" }}>
+                        {t.duaSalamati.reciteDua}
+                      </span>
+                      <Heart
+                        className={`h-6 w-6 ${dir === "rtl" ? "mr-3" : "ml-3"}`}
+                      />
+                    </Button>
 
-                      {/* Error Message */}
-                      {error && (
-                        <div
-                          className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center"
-                          style={{ fontFamily: "var(--font-vazirmatn)" }}
-                        >
-                          {error}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    {/* Error Message */}
+                    {error && (
+                      <div
+                        className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center"
+                        style={{ fontFamily: "var(--font-vazirmatn)" }}
+                      >
+                        {error}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Decorative Divider */}
                   <div className="flex items-center justify-center gap-4">
@@ -320,7 +318,14 @@ export default function SalawatPage() {
                       className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-teal-800 dark:text-teal-200 leading-relaxed tracking-wide"
                       style={{ fontFamily: "var(--font-kitab)" }}
                     >
-                      {t.duaKhasa.arabicText}
+                      {t.duaSalamati.arabicText}
+                    </p>
+                    <div className="h-px w-full bg-linear-to-r from-transparent via-teal-200 dark:via-teal-800 to-transparent my-6"></div>
+                    <p
+                      className="text-lg md:text-xl text-teal-700 dark:text-teal-300 italic leading-relaxed text-center"
+                      style={{ fontFamily: "var(--font-vazirmatn)" }}
+                    >
+                      {t.duaSalamati.translation}
                     </p>
                     <div className="flex items-center justify-center gap-3 mt-2">
                       <div className="h-px w-12 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
@@ -361,11 +366,11 @@ export default function SalawatPage() {
                     onClick={increment}
                     disabled={incrementing || cooldown > 0}
                     size="sm"
-                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/40"
                   >
-                    <Sparkles className="h-4 w-4" />
+                    <Heart className="h-4 w-4" />
                     <span style={{ fontFamily: "var(--font-vazirmatn)" }}>
-                      {t.duaKhasa.title}
+                      {t.duaSalamati.reciteDua}
                     </span>
                   </Button>
                 </div>
@@ -387,19 +392,22 @@ export default function SalawatPage() {
           )}
 
           {/* Info Card */}
-          <Card className="bg-white border-2 border-yellow-200 p-6">
-            <div className="text-center space-y-4">
-              <h4
-                className="text-xl font-bold text-foreground"
-                style={{ fontFamily: "var(--font-vazirmatn)" }}
-              >
-                {t.salawat.about}
-              </h4>
+          <Card className="bg-white border-2 border-yellow-200 p-6 md:p-8">
+            <div className="space-y-6">
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <Heart className="h-6 w-6 text-teal-600" />
+                <h4
+                  className="text-xl font-bold text-foreground"
+                  style={{ fontFamily: "var(--font-vazirmatn)" }}
+                >
+                  {t.duaSalamati.title}
+                </h4>
+              </div>
               <p
                 className="text-muted-foreground leading-relaxed"
                 style={{ fontFamily: "var(--font-vazirmatn)" }}
               >
-                {t.salawat.description}
+                {t.duaSalamati.description}
               </p>
             </div>
           </Card>

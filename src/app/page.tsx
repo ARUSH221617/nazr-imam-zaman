@@ -30,12 +30,12 @@ export default function Home() {
       route: '/dua-faraj'
     },
     {
-      id: 'dua-khasa',
-      title: t.home.duaKhasa.title,
+      id: 'dua-salamati',
+      title: t.home.duaSalamati.title,
       icon: BookOpen,
-      description: t.home.duaKhasa.description,
+      description: t.home.duaSalamati.description,
       color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-      route: '/dua-khasa'
+      route: '/dua-salamati'
     }
   ], [t])
 
