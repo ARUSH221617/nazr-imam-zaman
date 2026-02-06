@@ -7,7 +7,12 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { replaceVariables } from "@/lib/utils";
-import { footerPrayerClassName, footerPrayerStyle } from "@/lib/typography";
+import {
+  footerPrayerClassName,
+  footerPrayerStyle,
+  prayerTextClassName,
+  prayerTextStyle,
+} from "@/lib/typography";
 import { useCounter } from "@/hooks/useCounter";
 import { FloatingCounter } from "@/components/FloatingCounter";
 
@@ -94,12 +99,14 @@ export default function DuaFarajPage() {
                       <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
                       <div className="h-px w-12 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
                     </div>
-                    <p
-                      className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-teal-800 dark:text-teal-200 leading-relaxed tracking-wide whitespace-pre-line text-center"
-                      style={{ fontFamily: "var(--font-kitab)" }}
-                    >
-                      {t.duaFaraj.arabicText}
-                    </p>
+                    <div className="text-teal-800 dark:text-teal-200">
+                      <p
+                        className={`${prayerTextClassName} whitespace-pre-line text-center`}
+                        style={prayerTextStyle}
+                      >
+                        {t.duaFaraj.arabicText}
+                      </p>
+                    </div>
                     <div className="h-px w-full bg-linear-to-r from-transparent via-teal-200 dark:via-teal-800 to-transparent my-6"></div>
                     <p
                       className="text-lg md:text-xl text-teal-700 dark:text-teal-300 italic leading-relaxed text-center"

@@ -7,7 +7,12 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { replaceVariables } from "@/lib/utils";
-import { footerPrayerClassName, footerPrayerStyle } from "@/lib/typography";
+import {
+  footerPrayerClassName,
+  footerPrayerStyle,
+  prayerTextClassName,
+  prayerTextStyle,
+} from "@/lib/typography";
 import { useCounter } from "@/hooks/useCounter";
 import { FloatingCounter } from "@/components/FloatingCounter";
 
@@ -94,12 +99,14 @@ export default function SalawatPage() {
                       <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
                       <div className="h-px w-12 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
                     </div>
-                    <p
-                      className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-teal-800 dark:text-teal-200 leading-relaxed tracking-wide"
-                      style={{ fontFamily: "var(--font-kitab)" }}
-                    >
-                      {t.salawat.arabicText}
-                    </p>
+                    <div className="text-teal-800 dark:text-teal-200">
+                      <p
+                        className={prayerTextClassName}
+                        style={prayerTextStyle}
+                      >
+                        {t.salawat.arabicText}
+                      </p>
+                    </div>
                     <div className="flex items-center justify-center gap-3 mt-2">
                       <div className="h-px w-12 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
                       <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
