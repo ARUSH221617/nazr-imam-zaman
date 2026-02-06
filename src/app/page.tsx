@@ -7,6 +7,7 @@ import { Sparkles, Heart, BookOpen } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { footerPrayerClassName, footerPrayerStyle } from '@/lib/typography'
 
 export default function Home() {
   const { t, language, dir } = useLanguage()
@@ -190,7 +191,7 @@ export default function Home() {
               <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
               <div className="h-px w-16 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
             </div>
-            <p className="text-sm md:text-base" style={{ fontFamily: 'var(--font-kitab)' }}>
+            <p className={footerPrayerClassName} style={footerPrayerStyle}>
               {t.common.footer.prayer}
             </p>
             <p className="text-xs md:text-sm text-teal-200" style={{ fontFamily: 'var(--font-vazirmatn)' }}>

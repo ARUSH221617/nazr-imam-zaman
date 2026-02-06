@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { replaceVariables } from "@/lib/utils";
+import { footerPrayerClassName, footerPrayerStyle } from "@/lib/typography";
 import { useCounter } from "@/hooks/useCounter";
 import { FloatingCounter } from "@/components/FloatingCounter";
 
@@ -155,8 +156,8 @@ export default function DuaSalamatiPage() {
         <div className="container mx-auto px-4">
           <div className="text-center space-y-2">
             <p
-              className="text-sm"
-              style={{ fontFamily: "var(--font-vazirmatn)" }}
+              className={footerPrayerClassName}
+              style={footerPrayerStyle}
             >
               {t.common.footer.prayer}
             </p>
