@@ -1,33 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, TrendingUp } from "lucide-react";
+import { ArrowRight, Heart } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { cn, replaceVariables, getLocale, formatNumber } from "@/lib/utils";
+import { replaceVariables } from "@/lib/utils";
 import { useCounter } from "@/hooks/useCounter";
-import { useScrollDetection } from "@/hooks/useScrollDetection";
 import { FloatingCounter } from "@/components/FloatingCounter";
 
 export default function SalawatPage() {
-  const { t, language, dir } = useLanguage();
+  const { t, dir } = useLanguage();
 
   // Use custom hooks
-  const {
-    count,
-    loading,
-    incrementing,
-    cooldown,
-    error,
-    increment,
-  } = useCounter("salawat", 5);
-
-  const { scrolled, substantialScroll } = useScrollDetection();
-
-  const locale = useMemo(() => getLocale(language), [language]);
+  const { count, incrementing, cooldown, increment } = useCounter(
+    "salawat",
+    5,
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -92,87 +82,8 @@ export default function SalawatPage() {
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Counter Card - Shows when at top */}
           <Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 p-8 md:p-12 mb-8 transition-all duration-300">
             <div className="text-center space-y-8">
-              {!substantialScroll && (
-                <>
-                  {/* Counter Display */}
-                  <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 text-teal-600 mb-4">
-                      <TrendingUp className="h-6 w-6" />
-                      <span
-                        className="font-semibold"
-                        style={{ fontFamily: "var(--font-vazirmatn)" }}
-                      >
-                        {t.common.total}
-                      </span>
-                    </div>
-
-                    {loading ? (
-                      <div className="text-6xl md:text-8xl font-bold text-teal-700">
-                        <span className="animate-pulse">...</span>
-                      </div>
-                    ) : (
-                      <div className="text-6xl md:text-8xl font-bold text-teal-700 transition-all duration-300">
-                        {formatNumber(count, locale)}
-                      </div>
-                    )}
-
-                    {/* Rate Limit Indicator */}
-                    {cooldown > 0 && (
-                      <div className="flex items-center justify-center gap-2 text-sm text-orange-600 animate-pulse">
-                        <span
-                          className="font-semibold"
-                          style={{ fontFamily: "var(--font-vazirmatn)" }}
-                        >
-                          {replaceVariables(t.common.cooldown, {
-                            seconds: cooldown,
-                          })}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="space-y-4">
-                    <Button
-                      onClick={increment}
-                      disabled={incrementing || cooldown > 0}
-                      size="lg"
-                      className="w-full md:w-auto px-12 py-6 text-xl font-bold bg-linear-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white border-0 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-                    >
-                      <Heart
-                        className={`h-6 w-6 ${dir === "rtl" ? "ml-3" : "mr-3"}`}
-                      />
-                      <span style={{ fontFamily: "var(--font-vazirmatn)" }}>
-                        {t.salawat.sendSalawat}
-                      </span>
-                      <Heart
-                        className={`h-6 w-6 ${dir === "rtl" ? "mr-3" : "ml-3"}`}
-                      />
-                    </Button>
-
-                    {/* Error Message */}
-                    {error && (
-                      <div
-                        className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 text-center"
-                        style={{ fontFamily: "var(--font-vazirmatn)" }}
-                      >
-                        {error}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Decorative Divider */}
-                  <div className="flex items-center justify-center gap-4">
-                    <div className="h-px w-24 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
-                    <div className="w-2 h-2 rounded-full bg-teal-400"></div>
-                    <div className="h-px w-24 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
-                  </div>
-                </>
-              )}
-
               {/* Arabic Text - Enhanced Visibility */}
               <div className="text-center space-y-6">
                 <div className="bg-linear-to-br from-teal-50 via-cyan-50 to-teal-50 dark:from-teal-950/30 dark:via-cyan-950/30 dark:to-teal-950/30 p-8 md:p-10 rounded-2xl border-2 border-teal-200 dark:border-teal-700 shadow-lg">
@@ -201,7 +112,7 @@ export default function SalawatPage() {
 
           <FloatingCounter
             count={count}
-            visible={substantialScroll}
+            visible
             increment={increment}
             incrementing={incrementing}
             cooldown={cooldown}
