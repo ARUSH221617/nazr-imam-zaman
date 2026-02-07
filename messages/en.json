@@ -26,6 +26,18 @@
       "copyright": "© {year} Awaiters of Mahdi - All rights reserved"
     }
   },
+  "admin": {
+    "title": "Admin",
+    "overview": {
+      "title": "Admin overview",
+      "total": "Global total",
+      "counters": "Counter breakdown"
+    },
+    "nav": {
+      "blog": "Blog",
+      "gallery": "Gallery"
+    }
+  },
   "home": {
     "selectPrayer": "Choose",
     "selectSubtitle": "Select your prayer or invocation",
