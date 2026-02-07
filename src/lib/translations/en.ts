@@ -9,8 +9,8 @@ export const en = {
     remaining: 'Remaining',
     wait: 'Wait',
     seconds: 'seconds',
-    cooldown: 'Wait: {{seconds}}s',
-    remainingRequests: 'Remaining: {{count}} requests',
+    cooldown: 'Wait: {seconds}s',
+    remainingRequests: 'Remaining: {count} requests',
     ready: 'Ready',
     days: 'days',
     hours: 'hours',
@@ -23,7 +23,7 @@ export const en = {
     },
     footer: {
       prayer: 'O Allah, send blessings upon Muhammad and the family of Muhammad',
-      copyright: '© {{year}} Awaiters of Mahdi - All rights reserved',
+      copyright: '© {year} Awaiters of Mahdi - All rights reserved',
     },
   },
   home: {

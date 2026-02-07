@@ -1,40 +1,41 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Sparkles, Heart, BookOpen } from 'lucide-react'
-import Link from 'next/link'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { BookOpen, Heart, Sparkles } from 'lucide-react'
+
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Link } from '@/i18n/navigation'
 import { prayerTextClassName, prayerTextStyle } from '@/lib/typography'
 
 export default function Home() {
-  const { t, language, dir } = useLanguage()
+  const t = useTranslations()
   const [currentPrayer, setCurrentPrayer] = useState(0)
 
   const prayerTypes = useMemo(() => [
     {
       id: 'salawat',
-      title: t.home.salawat.title,
+      title: t('home.salawat.title'),
       icon: Sparkles,
-      description: t.home.salawat.description,
+      description: t('home.salawat.description'),
       color: 'bg-gradient-to-br from-cyan-600 to-teal-600',
       route: '/salawat'
     },
     {
       id: 'dua-faraj',
-      title: t.home.duaFaraj.title,
+      title: t('home.duaFaraj.title'),
       icon: Heart,
-      description: t.home.duaFaraj.description,
+      description: t('home.duaFaraj.description'),
       color: 'bg-gradient-to-br from-teal-500 to-cyan-600',
       route: '/dua-faraj'
     },
     {
       id: 'dua-salamati',
-      title: t.home.duaSalamati.title,
+      title: t('home.duaSalamati.title'),
       icon: BookOpen,
-      description: t.home.duaSalamati.description,
+      description: t('home.duaSalamati.description'),
       color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
       route: '/dua-salamati'
     }
@@ -46,14 +47,6 @@ export default function Home() {
     }, 5000)
     return () => clearInterval(interval)
   }, [prayerTypes.length])
-
-  const replaceVariables = (text: string, variables: Record<string, string | number>): string => {
-    let result = text
-    Object.entries(variables).forEach(([key, value]) => {
-      result = result.replace(new RegExp(`{{${key}}}`, 'g'), String(value))
-    })
-    return result
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -74,16 +67,16 @@ export default function Home() {
           <div className="text-center space-y-8">
             <div className="inline-block">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-kitab)' }}>
-                {t.common.bismillah}
+                {t('common.bismillah')}
               </h1>
             </div>
 
             <div className="space-y-2">
               <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                {t.common.siteName}
+                {t('common.siteName')}
               </h2>
               <p className="text-lg md:text-xl text-teal-100" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                {t.common.siteSubtitle}
+                {t('common.siteSubtitle')}
               </p>
             </div>
 
@@ -128,10 +121,10 @@ export default function Home() {
           {/* Section Title */}
           <div className="text-center mb-12">
             <h3 className="text-3xl md:text-4xl font-bold mb-4 text-foreground" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-              {t.home.selectPrayer}
+              {t('home.selectPrayer')}
             </h3>
             <p className="text-muted-foreground text-lg" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-              {t.home.selectSubtitle}
+              {t('home.selectSubtitle')}
             </p>
             <div className="flex items-center justify-center gap-4 py-4">
               <div className="h-px w-24 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
@@ -142,7 +135,7 @@ export default function Home() {
 
           {/* Menu Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {prayerTypes.map((prayer, index) => {
+            {prayerTypes.map((prayer) => {
               const Icon = prayer.icon
               return (
                 <Link key={prayer.id} href={prayer.route}>
@@ -170,7 +163,7 @@ export default function Home() {
                         className="w-full bg-white/20 hover:bg-white/30 text-white border-2 border-white/30 hover:border-white/50 backdrop-blur-sm"
                       >
                         <span className="font-semibold" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-                          {t.common.enter}
+                          {t('common.enter')}
                         </span>
                       </Button>
                     </div>
@@ -192,10 +185,10 @@ export default function Home() {
               <div className="h-px w-16 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
             </div>
             <p className={prayerTextClassName} style={prayerTextStyle}>
-              {t.common.footer.prayer}
+              {t('common.footer.prayer')}
             </p>
             <p className="text-xs md:text-sm text-teal-200" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
-              {replaceVariables(t.common.footer.copyright, { year: new Date().getFullYear() })}
+              {t('common.footer.copyright', { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>

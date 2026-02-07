@@ -9,8 +9,8 @@ export const fa = {
     remaining: 'امکان ارسال',
     wait: 'انتظار',
     seconds: 'ثانیه',
-    cooldown: 'انتظار: {{seconds}} ثانیه',
-    remainingRequests: 'امکان ارسال: {{count}} بار',
+    cooldown: 'انتظار: {seconds} ثانیه',
+    remainingRequests: 'امکان ارسال: {count} بار',
     ready: 'آماده',
     days: 'روز',
     hours: 'ساعت',
@@ -23,7 +23,7 @@ export const fa = {
     },
     footer: {
       prayer: 'اللهم صل علی محمد و آل محمد و عجل فرجهم',
-      copyright: '© {{year}} منتظران مهدی - تمامی حقوق محفوظ است',
+      copyright: '© {year} منتظران مهدی - تمامی حقوق محفوظ است',
     },
   },
   home: {

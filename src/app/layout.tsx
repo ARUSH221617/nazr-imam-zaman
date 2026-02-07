@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Vazirmatn } from "next/font/google";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Inter, Vazirmatn } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
+
 import { Toaster } from "@/components/ui/toaster";
-import { LanguageProvider } from "@/contexts/LanguageContext";
-import { LanguageWrapper } from "@/components/LanguageWrapper";
+import { isRTL, type Language } from "@/lib/translations";
+
+import "./globals.css";
 
 const vazirmatn = Vazirmatn({
   variable: "--font-vazirmatn",
@@ -37,13 +39,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const dir = isRTL(locale as Language) ? "rtl" : "ltr";
+
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -59,11 +65,9 @@ export default function RootLayout({
       <body
         className={`${vazirmatn.variable} ${inter.variable} antialiased bg-background text-foreground`}
       >
-        <LanguageProvider>
-          <LanguageWrapper>
-            {children}
-          </LanguageWrapper>
-        </LanguageProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
         <Toaster />
       </body>
     </html>

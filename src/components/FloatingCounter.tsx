@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { useLocale, useTranslations } from "next-intl";
 import { LucideIcon } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { cn, replaceVariables, getLocale, formatNumber } from "@/lib/utils";
+
+import { Button } from "@/components/ui/button";
+import { cn, formatNumber, getLocale } from "@/lib/utils";
 
 interface FloatingCounterProps {
   count: number;
@@ -25,7 +26,8 @@ export function FloatingCounter({
   Icon,
   actionLabel,
 }: FloatingCounterProps) {
-  const { t, language } = useLanguage();
+  const t = useTranslations();
+  const language = useLocale();
   const locale = useMemo(() => getLocale(language), [language]);
 
   return (
@@ -47,7 +49,7 @@ export function FloatingCounter({
               {formatNumber(count, locale)}
             </span>
             <span className="text-sm text-white/80">
-              {t.common.total}
+              {t("common.total")}
             </span>
           </div>
           {/* Action button */}
@@ -70,9 +72,7 @@ export function FloatingCounter({
               className="font-semibold"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {replaceVariables(t.common.cooldown, {
-                seconds: cooldown,
-              })}
+              {t("common.cooldown", { seconds: cooldown })}
             </span>
           </div>
         )}

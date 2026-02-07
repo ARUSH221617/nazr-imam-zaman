@@ -1,23 +1,26 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Heart } from "lucide-react";
-import Link from "next/link";
-import { useLanguage } from "@/contexts/LanguageContext";
+
+import { FloatingCounter } from "@/components/FloatingCounter";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { replaceVariables } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useCounter } from "@/hooks/useCounter";
+import { Link } from "@/i18n/navigation";
+import { isRTL, type Language } from "@/lib/translations";
 import {
   footerPrayerClassName,
   footerPrayerStyle,
   prayerTextClassName,
   prayerTextStyle,
 } from "@/lib/typography";
-import { useCounter } from "@/hooks/useCounter";
-import { FloatingCounter } from "@/components/FloatingCounter";
 
 export default function DuaSalamatiPage() {
-  const { t, dir } = useLanguage();
+  const t = useTranslations();
+  const locale = useLocale();
+  const dir = isRTL(locale as Language) ? "rtl" : "ltr";
 
   // Use custom hooks
   const { count, incrementing, cooldown, increment } = useCounter(
@@ -39,7 +42,7 @@ export default function DuaSalamatiPage() {
                 <ArrowRight
                   className={`h-4 w-4 ${dir === "rtl" ? "ml-2" : "mr-2"}`}
                 />
-                <span className="font-semibold">{t.common.back}</span>
+                <span className="font-semibold">{t("common.back")}</span>
               </Button>
             </Link>
             <div className="flex items-center gap-4">
@@ -48,7 +51,7 @@ export default function DuaSalamatiPage() {
                 className="text-2xl md:text-3xl font-bold"
                 style={{ fontFamily: "var(--font-vazirmatn)" }}
               >
-                {t.common.siteName}
+                {t("common.siteName")}
               </h1>
             </div>
           </div>
@@ -59,7 +62,7 @@ export default function DuaSalamatiPage() {
                 className="text-3xl md:text-5xl font-bold text-white"
                 style={{ fontFamily: "var(--font-kitab)" }}
               >
-                {t.common.bismillah}
+                {t("common.bismillah")}
               </h2>
             </div>
 
@@ -73,13 +76,13 @@ export default function DuaSalamatiPage() {
               className="text-4xl md:text-6xl font-bold text-white"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {t.duaSalamati.title}
+              {t("duaSalamati.title")}
             </h3>
             <p
               className="text-lg text-teal-100"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {t.duaSalamati.subtitle}
+              {t("duaSalamati.subtitle")}
             </p>
           </div>
         </div>
@@ -104,7 +107,7 @@ export default function DuaSalamatiPage() {
                         className={prayerTextClassName}
                         style={prayerTextStyle}
                       >
-                        {t.duaSalamati.arabicText}
+                        {t("duaSalamati.arabicText")}
                       </p>
                     </div>
                     <div className="h-px w-full bg-linear-to-r from-transparent via-teal-200 dark:via-teal-800 to-transparent my-6"></div>
@@ -112,7 +115,7 @@ export default function DuaSalamatiPage() {
                       className="text-lg md:text-xl text-teal-700 dark:text-teal-300 italic leading-relaxed text-center"
                       style={{ fontFamily: "var(--font-vazirmatn)" }}
                     >
-                      {t.duaSalamati.translation}
+                      {t("duaSalamati.translation")}
                     </p>
                     <div className="flex items-center justify-center gap-3 mt-2">
                       <div className="h-px w-12 bg-linear-to-r from-transparent via-teal-400 to-transparent"></div>
@@ -132,7 +135,7 @@ export default function DuaSalamatiPage() {
             incrementing={incrementing}
             cooldown={cooldown}
             Icon={Heart}
-            actionLabel={t.duaSalamati.reciteDua}
+            actionLabel={t("duaSalamati.reciteDua")}
           />
 
           {/* Info Card */}
@@ -144,14 +147,14 @@ export default function DuaSalamatiPage() {
                   className="text-xl font-bold text-foreground"
                   style={{ fontFamily: "var(--font-vazirmatn)" }}
                 >
-                  {t.duaSalamati.title}
+                  {t("duaSalamati.title")}
                 </h4>
               </div>
               <p
                 className="text-muted-foreground leading-relaxed"
                 style={{ fontFamily: "var(--font-vazirmatn)" }}
               >
-                {t.duaSalamati.description}
+                {t("duaSalamati.description")}
               </p>
             </div>
           </Card>
@@ -166,13 +169,13 @@ export default function DuaSalamatiPage() {
               className={footerPrayerClassName}
               style={footerPrayerStyle}
             >
-              {t.common.footer.prayer}
+              {t("common.footer.prayer")}
             </p>
             <p
               className="text-xs text-teal-200"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {replaceVariables(t.common.footer.copyright, {
+              {t("common.footer.copyright", {
                 year: new Date().getFullYear(),
               })}
             </p>

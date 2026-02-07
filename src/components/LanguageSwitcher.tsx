@@ -1,6 +1,8 @@
 'use client'
 
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useLocale } from 'next-intl'
+import { Languages } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,12 +10,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Language, languageNames } from '@/lib/translations'
-import { Languages } from 'lucide-react'
+import { usePathname, useRouter } from '@/i18n/navigation'
+import { isRTL, type Language, languageNames } from '@/lib/translations'
 
 export function LanguageSwitcher() {
-  const { language, setLanguage, dir } = useLanguage()
+  const locale = useLocale()
+  const pathname = usePathname()
+  const router = useRouter()
+  const dir = isRTL(locale as Language) ? 'rtl' : 'ltr'
   const languages: Language[] = ['fa', 'ar', 'en']
+
+  const handleLanguageChange = (language: Language) => {
+    router.replace(pathname, { locale: language })
+  }
 
   return (
     <div className="relative" dir={dir === 'rtl' ? 'rtl' : 'ltr'}>
@@ -26,7 +35,7 @@ export function LanguageSwitcher() {
           >
             <Languages className="h-4 w-4" />
             <span className="text-sm font-medium">
-              {languageNames[language].nativeName}
+              {languageNames[locale as Language].nativeName}
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -34,8 +43,8 @@ export function LanguageSwitcher() {
           {languages.map((lang) => (
             <DropdownMenuItem
               key={lang}
-              onClick={() => setLanguage(lang)}
-              className={`cursor-pointer ${language === lang ? 'bg-teal-100 font-bold' : ''}`}
+              onClick={() => handleLanguageChange(lang)}
+              className={`cursor-pointer ${locale === lang ? 'bg-teal-100 font-bold' : ''}`}
             >
               <div className="flex flex-col w-full text-left">
                 <span className="text-sm font-medium">

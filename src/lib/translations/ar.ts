@@ -9,8 +9,8 @@ export const ar = {
     remaining: 'متبقي',
     wait: 'انتظار',
     seconds: 'ثانية',
-    cooldown: 'انتظار: {{seconds}} ثانية',
-    remainingRequests: 'متبقي: {{count}} مرات',
+    cooldown: 'انتظار: {seconds} ثانية',
+    remainingRequests: 'متبقي: {count} مرات',
     ready: 'جاهز',
     days: 'يوم',
     hours: 'ساعة',
@@ -23,7 +23,7 @@ export const ar = {
     },
     footer: {
       prayer: 'اللهم صل علی محمد و آل محمد و عجل فرجهم',
-      copyright: '© {{year}} منتظرون المهدي - جميع الحقوق محفوظة',
+      copyright: '© {year} منتظرون المهدي - جميع الحقوق محفوظة',
     },
   },
   home: {
