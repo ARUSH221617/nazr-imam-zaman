@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslations } from "next-intl";
 import { useToast } from "@/hooks/use-toast";
 
 export function useCounter(type: string, defaultRemaining: number = 5) {
-  const { t } = useLanguage();
+  const t = useTranslations();
   const { toast } = useToast();
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export function useCounter(type: string, defaultRemaining: number = 5) {
   // Increment counter
   const increment = async () => {
     if (cooldown > 0) {
-      setError(t.common.error.rateLimit);
+      setError(t('common.error.rateLimit'));
       setTimeout(() => setError(null), 2000);
       return;
     }
@@ -52,13 +52,13 @@ export function useCounter(type: string, defaultRemaining: number = 5) {
       const data = await response.json();
 
       if (response.status === 429) {
-        setError(t.common.error.rateLimit);
+        setError(t('common.error.rateLimit'));
         setRemaining(data.remaining);
         setCooldown(Math.ceil((data.resetTime - Date.now()) / 1000));
         // Show toast notification for rate limit
         toast({
-          title: t.common.error.rateLimit,
-          description: t.common.error.rateLimitMessage,
+          title: t('common.error.rateLimit'),
+          description: t('common.error.rateLimitMessage'),
           variant: "default",
         });
       } else if (data.success) {
@@ -71,16 +71,16 @@ export function useCounter(type: string, defaultRemaining: number = 5) {
           setCooldown(cooldownSeconds);
           // Show toast notification when hitting limit
           toast({
-            title: t.common.error.rateLimit,
-            description: t.common.error.rateLimitMessage,
+            title: t('common.error.rateLimit'),
+            description: t('common.error.rateLimitMessage'),
             variant: "default",
           });
         }
       } else {
-        setError(data.error || t.common.error.increment);
+        setError(data.error || t('common.error.increment'));
       }
     } catch (error) {
-      setError(t.common.error.connection);
+      setError(t('common.error.connection'));
       console.error("Error incrementing counter:", error);
     } finally {
       setIncrementing(false);

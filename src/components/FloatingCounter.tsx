@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { cn, replaceVariables, getLocale, formatNumber } from "@/lib/utils";
+import { useTranslations, useLocale } from "next-intl";
+import { cn, getLocale, formatNumber } from "@/lib/utils";
 
 interface FloatingCounterProps {
   count: number;
@@ -25,8 +25,9 @@ export function FloatingCounter({
   Icon,
   actionLabel,
 }: FloatingCounterProps) {
-  const { t, language } = useLanguage();
-  const locale = useMemo(() => getLocale(language), [language]);
+  const t = useTranslations();
+  const locale = useLocale();
+  const formattedLocale = useMemo(() => getLocale(locale), [locale]);
 
   return (
     <div
@@ -39,15 +40,15 @@ export function FloatingCounter({
       )}
     >
       {/* Glass morphism design */}
-      <div className="bg-linear-to-r from-teal-600/90 via-cyan-600/90 to-teal-600/90 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-2xl p-4">
+      <div className="bg-gradient-to-r from-teal-600/90 via-cyan-600/90 to-teal-600/90 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-2xl p-4">
         <div className="flex items-center justify-between gap-4">
           {/* Counter display */}
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold text-white">
-              {formatNumber(count, locale)}
+              {formatNumber(count, formattedLocale)}
             </span>
             <span className="text-sm text-white/80">
-              {t.common.total}
+              {t('common.total')}
             </span>
           </div>
           {/* Action button */}
@@ -70,7 +71,7 @@ export function FloatingCounter({
               className="font-semibold"
               style={{ fontFamily: "var(--font-vazirmatn)" }}
             >
-              {replaceVariables(t.common.cooldown, {
+              {t('common.cooldown', {
                 seconds: cooldown,
               })}
             </span>

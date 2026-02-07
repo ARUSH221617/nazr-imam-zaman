@@ -1,0 +1,76 @@
+{
+  "common": {
+    "bismillah": "In the name of GOD, the Most Gracious, the Most Merciful",
+    "siteName": "Awaiters of Mahdi",
+    "siteSubtitle": "Awaiting the reappearance of Imam Mahdi (may God hasten his return)",
+    "back": "Back",
+    "enter": "Enter",
+    "total": "Total",
+    "remaining": "Remaining",
+    "wait": "Wait",
+    "seconds": "seconds",
+    "cooldown": "Wait: {seconds}s",
+    "remainingRequests": "Remaining: {count} requests",
+    "ready": "Ready",
+    "days": "days",
+    "hours": "hours",
+    "minutes": "minutes",
+    "error": {
+      "rateLimit": "Rate limit reached",
+      "rateLimitMessage": "Please wait before sending more prayers",
+      "connection": "Server connection error",
+      "increment": "Error incrementing counter"
+    },
+    "footer": {
+      "prayer": "O Allah, send blessings upon Muhammad and the family of Muhammad",
+      "copyright": "© {year} Awaiters of Mahdi - All rights reserved"
+    }
+  },
+  "home": {
+    "selectPrayer": "Choose",
+    "selectSubtitle": "Select your prayer or invocation",
+    "salawat": {
+      "title": "Salawat",
+      "description": "Send blessings upon the Prophet and his family"
+    },
+    "duaSalamati": {
+      "title": "Dua Salamati",
+      "description": "Prayer \"Allahumma Kun Li-waliyyik\" for the safety of Imam Mahdi (AJ)"
+    },
+    "duaFaraj": {
+      "title": "Dua Faraj (Ilahi Azuma'l Bala)",
+      "description": "Prayer \"Ilahi Azuma'l Bala\" for relief from hardships"
+    }
+  },
+  "salawat": {
+    "title": "Salawat",
+    "subtitle": "Salawat - Blessings upon the Prophet and his family",
+    "sendSalawat": "Send Salawat",
+    "about": "About Salawat",
+    "description": "Salawat is a prayer of blessings upon Prophet Muhammad (peace be upon him) and his family (Ahl al-Bayt). It is considered one of the most virtuous deeds in Islam and brings numerous blessings and rewards to the believer.",
+    "arabicText": "اللهم صل علی محمد و آل محمد",
+    "countdown": "Countdown to Blessed Ramadan",
+    "of": "of",
+    "target": "target",
+    "rateLimitToast": "Rate limit reduced! Please wait {seconds} seconds. {remaining} attempts remaining",
+    "floatingTitle": "Salawat"
+  },
+  "duaSalamati": {
+    "title": "Dua Salamati (Allahumma Kun Li-waliyyik)",
+    "subtitle": "Dua Salamati - Prayer for the Safety of Imam Mahdi (AJ)",
+    "reciteDua": "Recite Dua Salamati",
+    "about": "About Dua Salamati",
+    "description": "This powerful prayer (Allahumma Kun Li-waliyyik) is recited for the safety and protection of Imam Mahdi (AJ) during his occultation. It expresses the believer's deep connection and loyalty to the Imam of our time.",
+    "arabicText": "اَللّٰهُمَّ كُنْ لِوَلِیِّكَ الْحُجَّةِ بْنِ الْحَسَنِ صَلَواتُكَ عَلَیْهِ وَعَلى آبائِهِ فِی هٰذِهِ السّاعَةِ وَفی کُلِّ ساعَةٍ وَلیًّا وَحافِظاً وَقائِداً وَناصِراً وَدَلیلاً وَعَیْناً حَتّى تُسْكِنَهُ أَرْضَكَ طَوْعاً وَتُمَتِّعَهُ فیها طَویلاً. اَللّٰهُمَّ صَلِّ عَلَی مُحَمَّدٍ وَآلِ مُحَمَّدٍ",
+    "translation": "O Allah, be, for Your representative, the Hujjah (proof), son of Hasan, Your blessings be on him and his forefathers, in this hour and in every hour, a guardian, a protector, a leader, a guide, a witness, and a proof, until You make him reside on Your earth, by Your command, and make him enjoy it for a long time. O Allah, send blessings upon Muhammad and the family of Muhammad."
+  },
+  "duaFaraj": {
+    "title": "Dua Faraj (Ilahi Azuma'l Bala)",
+    "subtitle": "Dua Faraj - Prayer for intercession and immediate relief",
+    "reciteDua": "Recite Dua Faraj",
+    "about": "Benefits of Dua Faraj",
+    "description": "This great prayer (Ilahi Azuma'l Bala) is recited for relief from severe hardships and calamities. It seeks the intercession of Prophet Muhammad (PBUH) and Imam Ali (AS) and the support of Imam Mahdi (AJ) for immediate relief and divine assistance in the most difficult circumstances.",
+    "arabicText": "اِلهى عَظُمَ الْبَلاَّءُ وَ بَرِحَ الْخَفاَّءُ\nوَانْکَشَفَ الْغِطاَّءُ وَانْقَطَعَ الرَّجاَّءُ\nوَ ضاقَتِ الاْرْضُ وَ مُنِعَتِ السَّماَّءُ و\nاَنْتَ الْمُسْتَعانُ وَ اِلَیْکَ الْمُشْتَکى\nوَ عَلَیْکَ الْمُعَوَّلُ فِى الشِّدَّةِ وَالرَّخاَّءِ\nاَللّهُمَّ صَلِّ عَلى مُحَمَّدٍ وَ آلِ مُحَمَّدٍ\nاُولِى الاْمْرِ الَّذینَ فَرَضْتَ عَلَیْنا طاعَتَهُمْ\nوَ عَرَّفْتَنا بِذلِکَ مَنْزِلَتَهُمْ فَفَرِّجْ عَنا\nبِحَقِّهِمْ فَرَجاً عاجِلا قَریباً کَلَمْحِ الْبَصَرِ\nأَوْ هُوَ أَقْرَبُ\nیَا مُحَمَّدُ یَا عَلِیُّ\nیَا عَلِیُّ یَا مُحَمَّدُ اکْفِیانِی فَإِنَّکُما کافِیانِ\nوَانْصُرانِی فَإِنَّکُما ناصِرانِ\nیَا مَوْلانا یَا صاحِبَ الزَّمانِ\nالْغَوْثَ الْغَوْثَ الْغَوْثَ\nأَدْرِکْنِی أَدْرِکْنِی أَدْرِکْنِی\nالسَّاعَةَ السَّاعَةَ السّاعَةَ\nالْعَجَلَ الْعَجَلَ الْعَجَلَ\nیَا أَرْحَمَ الرَّاحِمِینَ بِحَقِّ مُحَمَّدٍ وَآلِهِ الطَّاهِرِینَ",
+    "translation": "O Allah! Great has become the calamity, and the secret has been revealed, and the cover has been lifted, and hope has been cut off, and the earth has become narrow and the sky has been withheld. And You are the One whose help is sought, and to You is the complaint, and upon You is the reliance in hardship and ease. O Allah, send blessings upon Muhammad and the family of Muhammad, the masters of the affair whose obedience You have made obligatory upon us and thus made us know their status. So grant us relief for their sake, a relief that is immediate and near, like the blink of an eye or even closer. O Muhammad! O Ali! O Ali! O Muhammad! Suffice me both of you, for you both are sufficient. And help me both of you, for you both are helpers. O our master! O Master of the Time! Help! Help! Help! Reach me! Reach me! Reach me! This hour! This hour! This hour! Hasten! Hasten! Hasten! O Most Merciful of the merciful, for the sake of Muhammad and his pure family."
+  }
+}
