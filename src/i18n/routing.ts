@@ -1,7 +1,9 @@
-import type { Language } from '@/lib/translations'
+import { defineRouting } from 'next-intl/routing'
 
-export const locales = ['fa', 'ar', 'en'] as const
+export const routing = defineRouting({
+  locales: ['fa', 'ar', 'en'],
+  defaultLocale: 'fa',
+  localePrefix: 'as-needed',
+})
 
-export const defaultLocale: Language = 'fa'
-
-export type AppLocale = (typeof locales)[number]
+export type AppLocale = (typeof routing.locales)[number]

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Vazirmatn } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 import { Toaster } from "@/components/ui/toaster";
 import { isRTL, type Language } from "@/lib/translations";
@@ -45,7 +44,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-  const messages = await getMessages();
   const dir = isRTL(locale as Language) ? "rtl" : "ltr";
 
   return (
@@ -65,9 +63,7 @@ export default async function RootLayout({
       <body
         className={`${vazirmatn.variable} ${inter.variable} antialiased bg-background text-foreground`}
       >
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        {children}
         <Toaster />
       </body>
     </html>

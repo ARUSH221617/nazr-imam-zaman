@@ -1,6 +1,5 @@
 import { createNavigation } from 'next-intl/navigation'
 
-import { locales } from './routing'
+import { routing } from './routing'
 
-export const { Link, usePathname, useRouter } =
-  createNavigation({ locales })
+export const { Link, usePathname, useRouter } = createNavigation(routing)
