@@ -1,22 +1,35 @@
 'use client'
 
-import { useLanguage } from '@/contexts/LanguageContext'
-import { Button } from '@/components/ui/button'
+import { useLocale } from 'next-intl';
+import { usePathname, useRouter } from '@/i18n/routing';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Language, languageNames } from '@/lib/translations'
-import { Languages } from 'lucide-react'
+} from '@/components/ui/dropdown-menu';
+import { Languages } from 'lucide-react';
+
+const languageNames = {
+  fa: { name: 'Persian', nativeName: 'فارسی' },
+  ar: { name: 'Arabic', nativeName: 'العربية' },
+  en: { name: 'English', nativeName: 'English' },
+};
 
 export function LanguageSwitcher() {
-  const { language, setLanguage, dir } = useLanguage()
-  const languages: Language[] = ['fa', 'ar', 'en']
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleLanguageChange = (newLocale: string) => {
+    router.replace(pathname, {locale: newLocale});
+  };
+
+  const isRtl = ['fa', 'ar'].includes(locale);
 
   return (
-    <div className="relative" dir={dir === 'rtl' ? 'rtl' : 'ltr'}>
+    <div className="relative" dir={isRtl ? 'rtl' : 'ltr'}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -26,23 +39,23 @@ export function LanguageSwitcher() {
           >
             <Languages className="h-4 w-4" />
             <span className="text-sm font-medium">
-              {languageNames[language].nativeName}
+              {languageNames[locale as keyof typeof languageNames].nativeName}
             </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[160px]">
-          {languages.map((lang) => (
+          {Object.keys(languageNames).map((lang) => (
             <DropdownMenuItem
               key={lang}
-              onClick={() => setLanguage(lang)}
-              className={`cursor-pointer ${language === lang ? 'bg-teal-100 font-bold' : ''}`}
+              onClick={() => handleLanguageChange(lang)}
+              className={`cursor-pointer ${locale === lang ? 'bg-teal-100 font-bold' : ''}`}
             >
               <div className="flex flex-col w-full text-left">
                 <span className="text-sm font-medium">
-                  {languageNames[lang].nativeName}
+                  {languageNames[lang as keyof typeof languageNames].nativeName}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {languageNames[lang].name}
+                  {languageNames[lang as keyof typeof languageNames].name}
                 </span>
               </div>
             </DropdownMenuItem>
