@@ -26,6 +26,13 @@
       "copyright": "© {year} Awaiters of Mahdi - All rights reserved"
     }
   },
+  "admin": {
+    "title": "Admin",
+    "nav": {
+      "blog": "Blog",
+      "gallery": "Gallery"
+    }
+  },
   "home": {
     "selectPrayer": "Choose",
     "selectSubtitle": "Select your prayer or invocation",

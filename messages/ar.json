@@ -26,6 +26,13 @@
       "copyright": "© {year} منتظرون المهدي - جميع الحقوق محفوظة"
     }
   },
+  "admin": {
+    "title": "الإدارة",
+    "nav": {
+      "blog": "المدونة",
+      "gallery": "المعرض"
+    }
+  },
   "home": {
     "selectPrayer": "اختر",
     "selectSubtitle": "اختر نوع الدعاء أو الصلاة",
