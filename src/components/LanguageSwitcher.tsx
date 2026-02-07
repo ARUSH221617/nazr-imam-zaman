@@ -21,7 +21,14 @@ export function LanguageSwitcher() {
   const languages: Language[] = ['fa', 'ar', 'en']
 
   const handleLanguageChange = (language: Language) => {
-    router.replace(pathname, { locale: language })
+    const localePrefix = `/${locale}`
+    const normalizedPathname = pathname.startsWith(`${localePrefix}/`)
+      ? pathname.replace(localePrefix, '')
+      : pathname === localePrefix
+        ? '/'
+        : pathname
+
+    router.replace(normalizedPathname, { locale: language })
   }
 
   return (
