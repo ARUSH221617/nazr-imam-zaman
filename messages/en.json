@@ -36,6 +36,37 @@
     "nav": {
       "blog": "Blog",
       "gallery": "Gallery"
+    },
+    "login": {
+      "title": "Admin sign in",
+      "subtitle": "Use your admin credentials to continue.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "admin@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign in",
+      "helper": "Need to reset your admin password?",
+      "forgot": "Reset password"
+    },
+    "reset": {
+      "title": "Reset admin password",
+      "subtitle": "We'll send a reset link to your admin email.",
+      "emailLabel": "Admin email address",
+      "emailPlaceholder": "admin@example.com",
+      "submit": "Send reset link",
+      "backToLogin": "Back to admin sign in"
+    },
+    "resetToken": {
+      "title": "Set a new admin password",
+      "subtitle": "Create a new password for your admin account.",
+      "tokenLabel": "Token",
+      "missingToken": "Missing token",
+      "passwordLabel": "New password",
+      "passwordPlaceholder": "Enter a new password",
+      "confirmLabel": "Confirm new password",
+      "confirmPlaceholder": "Re-enter new password",
+      "submit": "Update password",
+      "backToLogin": "Return to admin sign in"
     }
   },
   "home": {

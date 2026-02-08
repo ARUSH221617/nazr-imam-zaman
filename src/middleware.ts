@@ -5,8 +5,11 @@ import {routing} from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 const adminPathRegex = /^\/(?:(fa|ar|en)\/)?admin(?:\/|$)/;
+const adminAuthPathRegex =
+  /^\/(?:(fa|ar|en)\/)?admin\/(?:login|reset-password)(?:\/|$)/;
 
 const isAdminPath = (pathname: string) => adminPathRegex.test(pathname);
+const isAdminAuthPath = (pathname: string) => adminAuthPathRegex.test(pathname);
 
 const hasAdminAccess = (request: NextRequest) => {
   const authToken =
@@ -20,8 +23,16 @@ const hasAdminAccess = (request: NextRequest) => {
 };
 
 export default function middleware(request: NextRequest) {
-  if (isAdminPath(request.nextUrl.pathname) && !hasAdminAccess(request)) {
-    return new NextResponse('Forbidden', {status: 403});
+  if (
+    isAdminPath(request.nextUrl.pathname) &&
+    !isAdminAuthPath(request.nextUrl.pathname) &&
+    !hasAdminAccess(request)
+  ) {
+    const localeMatch = request.nextUrl.pathname.match(/^\/(fa|ar|en)(?:\/|$)/);
+    const locale = localeMatch?.[1] ?? routing.defaultLocale;
+    const loginUrl = new URL(`/${locale}/admin/login`, request.url);
+
+    return NextResponse.redirect(loginUrl);
   }
 
   return intlMiddleware(request);
