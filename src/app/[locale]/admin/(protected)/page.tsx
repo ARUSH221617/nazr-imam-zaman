@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { prayerTextClassName, prayerTextStyle } from "@/lib/typography";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const counterDefinitions = [
   { name: "salawat", labelKey: "home.salawat.title" },
   { name: "dua_faraj", labelKey: "duaSalamati.title" },
