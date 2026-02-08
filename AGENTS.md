@@ -21,6 +21,20 @@ bun run start
 bun run lint
 ```
 
+### Environment Setup Notes
+```bash
+# Remove lock files if environment setup is blocked
+rm prisma/migrations/migration_lock.toml
+rm bun.lock
+rm package-lock.json
+
+# Install dependencies
+bun install
+
+# If bun run dev fails with --hostname because of tee piping, run:
+bunx next dev -p 3000 --hostname 0.0.0.0
+```
+
 ### Database Commands (Prisma)
 ```bash
 # Push schema to database
