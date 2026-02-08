@@ -1,3 +1,23 @@
+@import "@fontsource/inter/100.css";
+@import "@fontsource/inter/200.css";
+@import "@fontsource/inter/300.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/inter/800.css";
+@import "@fontsource/inter/900.css";
+@import "@fontsource/vazirmatn/100.css";
+@import "@fontsource/vazirmatn/200.css";
+@import "@fontsource/vazirmatn/300.css";
+@import "@fontsource/vazirmatn/400.css";
+@import "@fontsource/vazirmatn/500.css";
+@import "@fontsource/vazirmatn/600.css";
+@import "@fontsource/vazirmatn/700.css";
+@import "@fontsource/vazirmatn/800.css";
+@import "@fontsource/vazirmatn/900.css";
+@import "@fontsource/amiri/400.css";
+@import "@fontsource/amiri/700.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -49,6 +69,9 @@
 
 :root {
   --radius: 0.625rem;
+  --font-inter: "Inter", sans-serif;
+  --font-vazirmatn: "Vazirmatn", sans-serif;
+  --font-kitab: "Amiri", serif;
   --background: oklch(0.98 0.005 180);
   --foreground: oklch(0.2 0.01 180);
   --card: oklch(1 0 0);

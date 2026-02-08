@@ -36,6 +36,37 @@
     "nav": {
       "blog": "وبلاگ",
       "gallery": "گالری"
+    },
+    "login": {
+      "title": "ورود مدیر",
+      "subtitle": "برای ادامه از اطلاعات مدیر استفاده کنید.",
+      "emailLabel": "ایمیل",
+      "emailPlaceholder": "admin@example.com",
+      "passwordLabel": "رمز عبور",
+      "passwordPlaceholder": "رمز عبور خود را وارد کنید",
+      "submit": "ورود",
+      "helper": "نیاز به بازنشانی رمز عبور دارید؟",
+      "forgot": "بازنشانی رمز عبور"
+    },
+    "reset": {
+      "title": "بازنشانی رمز عبور مدیر",
+      "subtitle": "لینک بازنشانی را به ایمیل مدیر ارسال می‌کنیم.",
+      "emailLabel": "ایمیل مدیر",
+      "emailPlaceholder": "admin@example.com",
+      "submit": "ارسال لینک بازنشانی",
+      "backToLogin": "بازگشت به ورود مدیر"
+    },
+    "resetToken": {
+      "title": "تنظیم رمز عبور جدید",
+      "subtitle": "رمز عبور جدیدی برای حساب مدیر ایجاد کنید.",
+      "tokenLabel": "کد",
+      "missingToken": "کد موجود نیست",
+      "passwordLabel": "رمز عبور جدید",
+      "passwordPlaceholder": "رمز عبور جدید را وارد کنید",
+      "confirmLabel": "تأیید رمز عبور جدید",
+      "confirmPlaceholder": "رمز عبور جدید را دوباره وارد کنید",
+      "submit": "به‌روزرسانی رمز عبور",
+      "backToLogin": "بازگشت به ورود مدیر"
     }
   },
   "home": {
