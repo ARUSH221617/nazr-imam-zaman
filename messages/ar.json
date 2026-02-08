@@ -36,6 +36,37 @@
     "nav": {
       "blog": "المدونة",
       "gallery": "المعرض"
+    },
+    "login": {
+      "title": "تسجيل دخول المشرف",
+      "subtitle": "استخدم بيانات المشرف للمتابعة.",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "admin@example.com",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "helper": "هل تحتاج إلى إعادة تعيين كلمة المرور؟",
+      "forgot": "إعادة تعيين كلمة المرور"
+    },
+    "reset": {
+      "title": "إعادة تعيين كلمة مرور المشرف",
+      "subtitle": "سنرسل رابط إعادة التعيين إلى بريد المشرف.",
+      "emailLabel": "بريد المشرف الإلكتروني",
+      "emailPlaceholder": "admin@example.com",
+      "submit": "إرسال رابط إعادة التعيين",
+      "backToLogin": "العودة إلى تسجيل الدخول"
+    },
+    "resetToken": {
+      "title": "تعيين كلمة مرور جديدة",
+      "subtitle": "أنشئ كلمة مرور جديدة لحساب المشرف.",
+      "tokenLabel": "الرمز",
+      "missingToken": "الرمز غير متوفر",
+      "passwordLabel": "كلمة المرور الجديدة",
+      "passwordPlaceholder": "أدخل كلمة مرور جديدة",
+      "confirmLabel": "تأكيد كلمة المرور الجديدة",
+      "confirmPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+      "submit": "تحديث كلمة المرور",
+      "backToLogin": "العودة إلى تسجيل الدخول"
     }
   },
   "home": {
