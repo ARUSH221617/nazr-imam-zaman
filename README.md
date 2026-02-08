@@ -72,6 +72,21 @@ bun start
 
 Open [http://localhost:3000](http://localhost:3000) to see your application running.
 
+## 🔐 Admin Seed Credentials
+
+The database seed script can create an initial admin user. Provide credentials via
+environment variables before running the seed:
+
+```bash
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="<strong-password>"
+ADMIN_NAME="Administrator"
+```
+
+If `ADMIN_PASSWORD` is not set, the seed script generates a strong password and prints it
+to the console on first creation. Store these credentials securely and rotate them after
+initial use.
+
 ## 🤖 Powered by Z.ai
 
 This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
