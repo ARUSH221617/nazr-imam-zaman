@@ -45,6 +45,12 @@
       "passwordLabel": "Password",
       "passwordPlaceholder": "Enter your password",
       "submit": "Sign in",
+      "submitting": "Signing in...",
+      "success": "Signed in successfully. Redirecting...",
+      "errorInvalid": "Invalid email or password.",
+      "errorNotAdmin": "This account does not have admin access.",
+      "errorDefault": "Unable to sign in. Please try again.",
+      "errorNetwork": "Network error. Please try again.",
       "helper": "Need to reset your admin password?",
       "forgot": "Reset password"
     },
