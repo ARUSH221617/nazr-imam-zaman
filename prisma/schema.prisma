@@ -46,3 +46,15 @@ model UserAction {
   action    String
   timestamp DateTime @default(now())
 }
+
+model AdminResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+}
