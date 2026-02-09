@@ -126,6 +126,12 @@
         "author": "Author",
         "category": "Category",
         "tags": "Tags",
+        "tagsPlaceholder": "Select tags",
+        "tagsSearchPlaceholder": "Search tags...",
+        "tagsEmpty": "No tags found.",
+        "tagsClear": "Clear all",
+        "tagsSelected": "{count} selected",
+        "tagsRemove": "Remove {name}",
         "name": "Name",
         "description": "Description",
         "none": "None"

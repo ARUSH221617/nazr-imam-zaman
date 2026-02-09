@@ -126,6 +126,12 @@
         "author": "الكاتب",
         "category": "التصنيف",
         "tags": "الوسوم",
+        "tagsPlaceholder": "اختر الوسوم",
+        "tagsSearchPlaceholder": "ابحث في الوسوم...",
+        "tagsEmpty": "لم يتم العثور على وسوم.",
+        "tagsClear": "مسح الكل",
+        "tagsSelected": "{count} محدد",
+        "tagsRemove": "إزالة {name}",
         "name": "الاسم",
         "description": "الوصف",
         "none": "لا شيء"

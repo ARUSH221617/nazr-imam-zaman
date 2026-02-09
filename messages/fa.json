@@ -126,6 +126,12 @@
         "author": "نویسنده",
         "category": "دسته بندی",
         "tags": "برچسب ها",
+        "tagsPlaceholder": "برچسب‌ها را انتخاب کنید",
+        "tagsSearchPlaceholder": "جستجوی برچسب...",
+        "tagsEmpty": "برچسبی پیدا نشد.",
+        "tagsClear": "پاک کردن همه",
+        "tagsSelected": "{count} برچسب انتخاب شده",
+        "tagsRemove": "حذف {name}",
         "name": "نام",
         "description": "توضیحات",
         "none": "هیچ کدام"

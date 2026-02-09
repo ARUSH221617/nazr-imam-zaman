@@ -8,6 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { MarkdownEditor } from "@/components/admin/blog/MarkdownEditor";
+import { TagMultiSelect } from "@/components/admin/blog/TagMultiSelect";
 import { useLanguage } from "@/hooks/use-language";
 
 const postFormSchema = z.object({
@@ -280,23 +281,19 @@ export function PostForm({
             control={form.control}
             name="tagIds"
             render={({ field }) => (
-              <select
-                multiple
-                value={field.value}
-                onChange={(event) => {
-                  const selected = Array.from(event.target.selectedOptions).map(
-                    (option) => option.value,
-                  );
-                  field.onChange(selected);
-                }}
-                className="h-28 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {tags.map((tag) => (
-                  <option key={tag.id} value={tag.id}>
-                    {tag.name}
-                  </option>
-                ))}
-              </select>
+              <TagMultiSelect
+                tags={tags}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                placeholder={t("admin.blog.form.tagsPlaceholder")}
+                searchPlaceholder={t("admin.blog.form.tagsSearchPlaceholder")}
+                emptyText={t("admin.blog.form.tagsEmpty")}
+                clearText={t("admin.blog.form.tagsClear")}
+                selectedCountText={t("admin.blog.form.tagsSelected", {
+                  count: field.value?.length ?? 0,
+                })}
+                removeTagText={(name) => t("admin.blog.form.tagsRemove", { name })}
+              />
             )}
           />
         </div>
@@ -356,4 +353,3 @@ export function PostForm({
     </form>
   );
 }
-
