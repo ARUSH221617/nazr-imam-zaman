@@ -73,6 +73,63 @@
       "confirmPlaceholder": "Re-enter new password",
       "submit": "Update password",
       "backToLogin": "Return to admin sign in"
+    },
+    "blog": {
+      "title": "Blog Management",
+      "posts": "Posts",
+      "categories": "Categories",
+      "tags": "Tags",
+      "newPost": "New post",
+      "editPost": "Edit post",
+      "searchPlaceholder": "Search posts",
+      "allStatuses": "All statuses",
+      "allLanguages": "All languages",
+      "allCategories": "All categories",
+      "filter": "Filter",
+      "empty": "No records found.",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "duplicate": "Duplicate",
+      "deleteConfirm": "Are you sure?",
+      "upload": "Upload image",
+      "uploading": "Uploading...",
+      "uploadError": "Image upload failed.",
+      "saveError": "Unable to save changes.",
+      "publishAtRequired": "Publish date is required for scheduled posts.",
+      "columns": {
+        "title": "Title",
+        "status": "Status",
+        "language": "Language",
+        "category": "Category",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "scheduled": "Scheduled",
+        "archived": "Archived"
+      },
+      "form": {
+        "title": "Title",
+        "slug": "Slug",
+        "excerpt": "Excerpt",
+        "content": "Content",
+        "coverImage": "Cover image",
+        "status": "Status",
+        "language": "Language",
+        "publishAt": "Publish at",
+        "author": "Author",
+        "category": "Category",
+        "tags": "Tags",
+        "name": "Name",
+        "description": "Description",
+        "none": "None"
+      }
     }
   },
   "home": {
@@ -121,5 +178,17 @@
     "description": "This great prayer (Ilahi Azuma'l Bala) is recited for relief from severe hardships and calamities. It seeks the intercession of Prophet Muhammad (PBUH) and Imam Ali (AS) and the support of Imam Mahdi (AJ) for immediate relief and divine assistance in the most difficult circumstances.",
     "arabicText": "اِلهى عَظُمَ الْبَلاَّءُ وَ بَرِحَ الْخَفاَّءُ\nوَانْکَشَفَ الْغِطاَّءُ وَانْقَطَعَ الرَّجاَّءُ\nوَ ضاقَتِ الاْرْضُ وَ مُنِعَتِ السَّماَّءُ و\nاَنْتَ الْمُسْتَعانُ وَ اِلَیْکَ الْمُشْتَکى\nوَ عَلَیْکَ الْمُعَوَّلُ فِى الشِّدَّةِ وَالرَّخاَّءِ\nاَللّهُمَّ صَلِّ عَلى مُحَمَّدٍ وَ آلِ مُحَمَّدٍ\nاُولِى الاْمْرِ الَّذینَ فَرَضْتَ عَلَیْنا طاعَتَهُمْ\nوَ عَرَّفْتَنا بِذلِکَ مَنْزِلَتَهُمْ فَفَرِّجْ عَنا\nبِحَقِّهِمْ فَرَجاً عاجِلا قَریباً کَلَمْحِ الْبَصَرِ\nأَوْ هُوَ أَقْرَبُ\nیَا مُحَمَّدُ یَا عَلِیُّ\nیَا عَلِیُّ یَا مُحَمَّدُ اکْفِیانِی فَإِنَّکُما کافِیانِ\nوَانْصُرانِی فَإِنَّکُما ناصِرانِ\nیَا مَوْلانا یَا صاحِبَ الزَّمانِ\nالْغَوْثَ الْغَوْثَ الْغَوْثَ\nأَدْرِکْنِی أَدْرِکْنِی أَدْرِکْنِی\nالسَّاعَةَ السَّاعَةَ السّاعَةَ\nالْعَجَلَ الْعَجَلَ الْعَجَلَ\nیَا أَرْحَمَ الرَّاحِمِینَ بِحَقِّ مُحَمَّدٍ وَآلِهِ الطَّاهِرِینَ",
     "translation": "O Allah! Great has become the calamity, and the secret has been revealed, and the cover has been lifted, and hope has been cut off, and the earth has become narrow and the sky has been withheld. And You are the One whose help is sought, and to You is the complaint, and upon You is the reliance in hardship and ease. O Allah, send blessings upon Muhammad and the family of Muhammad, the masters of the affair whose obedience You have made obligatory upon us and thus made us know their status. So grant us relief for their sake, a relief that is immediate and near, like the blink of an eye or even closer. O Muhammad! O Ali! O Ali! O Muhammad! Suffice me both of you, for you both are sufficient. And help me both of you, for you both are helpers. O our master! O Master of the Time! Help! Help! Help! Reach me! Reach me! Reach me! This hour! This hour! This hour! Hasten! Hasten! Hasten! O Most Merciful of the merciful, for the sake of Muhammad and his pure family."
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Latest updates and reflections",
+    "searchPlaceholder": "Search posts",
+    "allCategories": "All categories",
+    "allTags": "All tags",
+    "filter": "Filter",
+    "empty": "No posts found.",
+    "relatedPosts": "Related posts",
+    "categoryTitle": "Category: {name}",
+    "tagTitle": "Tag: {name}"
   }
 }

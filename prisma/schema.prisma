@@ -21,16 +21,77 @@ model User {
   isAdmin      Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  blogPosts    BlogPost[]
 }
 
-model Post {
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+model BlogPost {
+  id          String         @id @default(cuid())
+  title       String
+  slug        String         @default(cuid())
+  excerpt     String?        @db.Text
+  content     String         @db.Text @default("")
+  coverImage  String?
+  status      BlogPostStatus @default(DRAFT)
+  language    String         @default("fa")
+  publishAt   DateTime?
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  categoryId  String?
+  authorId    String?
+
+  category BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  author   User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  tags     BlogPostTag[]
+
+  @@unique([slug, language])
+  @@index([status, publishedAt])
+  @@index([status, publishAt])
+  @@index([language])
+  @@map("Post")
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?  @db.Text
+  language    String   @default("fa")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts BlogPost[]
+
+  @@unique([slug, language])
+}
+
+model BlogTag {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  name      String
+  slug      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  posts BlogPostTag[]
+
+  @@unique([slug])
+}
+
+model BlogPostTag {
+  postId String
+  tagId  String
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
 }
 
 model Counter {
