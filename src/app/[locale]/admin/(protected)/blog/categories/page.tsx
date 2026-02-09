@@ -10,12 +10,17 @@ export default async function AdminBlogCategoriesPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
-  const categories = await db.blogCategory.findMany({
+  const categories = await db.blogCategoryTranslation.findMany({
     orderBy: [{ language: "asc" }, { name: "asc" }],
     include: {
-      _count: {
+      category: {
         select: {
-          posts: true,
+          id: true,
+          _count: {
+            select: {
+              posts: true,
+            },
+          },
         },
       },
     },
@@ -26,15 +31,15 @@ export default async function AdminBlogCategoriesPage({
       <h3 className="text-lg font-semibold text-foreground">{t("admin.blog.categories")}</h3>
       <CategoryForm
         initialCategories={categories.map((category) => ({
-          id: category.id,
+          id: category.categoryId,
+          categoryId: category.categoryId,
           name: category.name,
           slug: category.slug,
           description: category.description,
           language: category.language,
-          postCount: category._count.posts,
+          postCount: category.category._count.posts,
         }))}
       />
     </div>
   );
 }
-

@@ -33,13 +33,7 @@ enum BlogPostStatus {
 
 model BlogPost {
   id          String         @id @default(cuid())
-  title       String
-  slug        String         @default(cuid())
-  excerpt     String?        @db.Text
-  content     String         @db.Text @default("")
-  coverImage  String?
   status      BlogPostStatus @default(DRAFT)
-  language    String         @default("fa")
   publishAt   DateTime?
   publishedAt DateTime?
   createdAt   DateTime       @default(now())
@@ -50,38 +44,81 @@ model BlogPost {
   category BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   author   User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
   tags     BlogPostTag[]
+  translations BlogPostTranslation[]
 
-  @@unique([slug, language])
   @@index([status, publishedAt])
   @@index([status, publishAt])
-  @@index([language])
   @@map("Post")
+}
+
+model BlogPostTranslation {
+  id         String   @id @default(cuid())
+  postId     String
+  language   String   @default("fa")
+  title      String
+  slug       String
+  excerpt    String?  @db.Text
+  content    String   @db.Text @default("")
+  coverImage String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, language])
+  @@unique([slug, language])
+  @@index([language])
 }
 
 model BlogCategory {
   id          String   @id @default(cuid())
-  name        String
-  slug        String
-  description String?  @db.Text
-  language    String   @default("fa")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   posts BlogPost[]
+  translations BlogCategoryTranslation[]
+}
 
+model BlogCategoryTranslation {
+  id          String   @id @default(cuid())
+  categoryId  String
+  language    String   @default("fa")
+  name        String
+  slug        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category BlogCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, language])
   @@unique([slug, language])
+  @@index([language])
 }
 
 model BlogTag {
   id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts BlogPostTag[]
+  translations BlogTagTranslation[]
+}
+
+model BlogTagTranslation {
+  id        String   @id @default(cuid())
+  tagId     String
+  language  String   @default("fa")
   name      String
   slug      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts BlogPostTag[]
+  tag BlogTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-  @@unique([slug])
+  @@unique([tagId, language])
+  @@unique([slug, language])
+  @@index([language])
 }
 
 model BlogPostTag {

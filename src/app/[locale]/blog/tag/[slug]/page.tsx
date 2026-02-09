@@ -28,12 +28,15 @@ export default async function BlogTagPage({
   });
   const currentQuery = query.success ? query.data : { page: 1, q: "" };
 
-  const tag = await db.blogTag.findUnique({
+  const tag = await db.blogTagTranslation.findUnique({
     where: {
-      slug,
+      slug_language: {
+        slug,
+        language: locale,
+      },
     },
     select: {
-      id: true,
+      tagId: true,
       name: true,
       slug: true,
     },
@@ -46,7 +49,7 @@ export default async function BlogTagPage({
   const pageSize = 10;
   const where = buildVisiblePostsWhere({
     language: locale,
-    tagId: tag.id,
+    tagId: tag.tagId,
     search: currentQuery.q,
   });
 
@@ -58,10 +61,29 @@ export default async function BlogTagPage({
       skip: (currentQuery.page - 1) * pageSize,
       take: pageSize,
       include: {
+        translations: {
+          where: {
+            language: locale,
+          },
+          select: {
+            title: true,
+            slug: true,
+            excerpt: true,
+            content: true,
+            coverImage: true,
+          },
+        },
         category: {
           select: {
-            name: true,
-            slug: true,
+            translations: {
+              where: {
+                language: locale,
+              },
+              select: {
+                name: true,
+                slug: true,
+              },
+            },
           },
         },
       },
@@ -104,7 +126,26 @@ export default async function BlogTagPage({
       {posts.length ? (
         <section className="grid gap-6">
           {posts.map((post) => (
-            <BlogPostCard key={post.id} post={post} locale={locale} />
+            <BlogPostCard
+              key={post.id}
+              post={{
+                title: post.translations[0]?.title ?? "",
+                slug: post.translations[0]?.slug ?? "",
+                excerpt: post.translations[0]?.excerpt ?? null,
+                content: post.translations[0]?.content ?? "",
+                coverImage: post.translations[0]?.coverImage ?? null,
+                publishedAt: post.publishedAt,
+                publishAt: post.publishAt,
+                createdAt: post.createdAt,
+                category: post.category?.translations[0]
+                  ? {
+                      name: post.category.translations[0].name,
+                      slug: post.category.translations[0].slug,
+                    }
+                  : null,
+              }}
+              locale={locale}
+            />
           ))}
           <BlogPagination page={currentQuery.page} totalPages={totalPages} buildHref={createHref} />
         </section>
@@ -116,4 +157,3 @@ export default async function BlogTagPage({
     </main>
   );
 }
-

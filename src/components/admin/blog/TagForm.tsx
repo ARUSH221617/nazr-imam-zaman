@@ -6,8 +6,10 @@ import { useLanguage } from "@/hooks/use-language";
 
 interface TagItem {
   id: string;
+  tagId: string;
   name: string;
   slug: string;
+  language: string;
   postCount?: number;
 }
 
@@ -17,8 +19,10 @@ interface TagFormProps {
 
 const initialFormState = {
   id: "",
+  tagId: "",
   name: "",
   slug: "",
+  language: "fa",
 };
 
 export function TagForm({ initialTags }: TagFormProps) {
@@ -46,17 +50,19 @@ export function TagForm({ initialTags }: TagFormProps) {
   const onEdit = (tag: TagItem) => {
     setFormState({
       id: tag.id,
+      tagId: tag.tagId,
       name: tag.name,
       slug: tag.slug,
+      language: tag.language,
     });
   };
 
-  const onDelete = async (id: string) => {
+  const onDelete = async (tagId: string, language: string) => {
     if (!window.confirm(t("admin.blog.deleteConfirm"))) {
       return;
     }
 
-    const response = await fetch(`/api/admin/blog/tags/${id}`, {
+    const response = await fetch(`/api/admin/blog/tags/${tagId}?language=${language}`, {
       method: "DELETE",
     });
 
@@ -82,8 +88,10 @@ export function TagForm({ initialTags }: TagFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          tagId: formState.tagId || null,
           name: formState.name,
           slug: formState.slug || null,
+          language: formState.language,
         }),
       });
 
@@ -103,7 +111,20 @@ export function TagForm({ initialTags }: TagFormProps) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={onSubmit} className="grid gap-3 rounded-xl border border-border bg-card p-4 md:grid-cols-4">
+      <form onSubmit={onSubmit} className="grid gap-3 rounded-xl border border-border bg-card p-4 md:grid-cols-5">
+        <select
+          value={formState.tagId}
+          onChange={(event) => setFormState((prev) => ({ ...prev, tagId: event.target.value }))}
+          disabled={Boolean(formState.id)}
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-60"
+        >
+          <option value="">{t("admin.blog.form.none")}</option>
+          {tags.map((tag) => (
+            <option key={`${tag.tagId}-${tag.language}`} value={tag.tagId}>
+              {tag.name} ({tag.language})
+            </option>
+          ))}
+        </select>
         <input
           value={formState.name}
           onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
@@ -116,6 +137,17 @@ export function TagForm({ initialTags }: TagFormProps) {
           placeholder={t("admin.blog.form.slug")}
           className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         />
+        <select
+          value={formState.language}
+          onChange={(event) =>
+            setFormState((prev) => ({ ...prev, language: event.target.value }))
+          }
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+        >
+          <option value="fa">Farsi</option>
+          <option value="ar">Arabic</option>
+          <option value="en">English</option>
+        </select>
         <button
           type="submit"
           disabled={isSubmitting}
@@ -141,13 +173,13 @@ export function TagForm({ initialTags }: TagFormProps) {
       <div className="space-y-3">
         {tags.map((tag) => (
           <div
-            key={tag.id}
+            key={`${tag.tagId}-${tag.language}`}
             className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between"
           >
             <div>
               <p className="font-medium text-foreground">{tag.name}</p>
               <p className="text-sm text-muted-foreground">
-                {tag.slug} · {tag.postCount ?? 0} posts
+                {tag.slug} ({tag.language}) · {tag.postCount ?? 0} posts
               </p>
             </div>
             <div className="flex gap-2">
@@ -160,7 +192,7 @@ export function TagForm({ initialTags }: TagFormProps) {
               </button>
               <button
                 type="button"
-                onClick={() => onDelete(tag.id)}
+                onClick={() => onDelete(tag.tagId, tag.language)}
                 className="rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
               >
                 {t("admin.blog.delete")}
@@ -172,4 +204,3 @@ export function TagForm({ initialTags }: TagFormProps) {
     </div>
   );
 }
-

@@ -82,6 +82,7 @@ export async function GET(
       id,
     },
     include: {
+      translations: true,
       category: true,
       author: {
         select: {
@@ -105,6 +106,7 @@ export async function GET(
   return NextResponse.json({
     item: {
       ...post,
+      translations: post.translations,
       tagIds: post.tags.map((postTag) => postTag.tagId),
     },
   });
@@ -150,11 +152,11 @@ export async function PUT(
 
     const baseSlug = payload.slug || slugify(payload.title) || `post-${Date.now()}`;
     const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) => {
-      const postWithSlug = await db.blogPost.findFirst({
+      const postWithSlug = await db.blogPostTranslation.findFirst({
         where: {
           slug: candidateSlug,
           language: payload.language,
-          id: {
+          postId: {
             not: id,
           },
         },
@@ -178,13 +180,7 @@ export async function PUT(
         id,
       },
       data: {
-        title: payload.title,
-        slug: uniqueSlug,
-        excerpt: payload.excerpt,
-        content: payload.content,
-        coverImage: payload.coverImage,
         status: payload.status,
-        language: payload.language,
         publishAt,
         publishedAt,
         categoryId: payload.categoryId,
@@ -199,6 +195,31 @@ export async function PUT(
               }
             : {}),
         },
+        translations: {
+          upsert: {
+            where: {
+              postId_language: {
+                postId: id,
+                language: payload.language,
+              },
+            },
+            create: {
+              title: payload.title,
+              slug: uniqueSlug,
+              excerpt: payload.excerpt,
+              content: payload.content,
+              coverImage: payload.coverImage,
+              language: payload.language,
+            },
+            update: {
+              title: payload.title,
+              slug: uniqueSlug,
+              excerpt: payload.excerpt,
+              content: payload.content,
+              coverImage: payload.coverImage,
+            },
+          },
+        },
       },
       include: {
         tags: {
@@ -206,6 +227,7 @@ export async function PUT(
             tag: true,
           },
         },
+        translations: true,
       },
     });
 
@@ -313,4 +335,3 @@ export async function DELETE(
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 }
-

@@ -6,11 +6,15 @@ import { db } from "@/lib/db";
 
 export default async function AdminBlogEditPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale, id } = await params;
   const t = await getTranslations({ locale });
+  const rawSearchParams = await searchParams;
+  const selectedLanguage = typeof rawSearchParams.language === "string" ? rawSearchParams.language : locale;
 
   const [post, categories, tags, authors] = await Promise.all([
     db.blogPost.findUnique({
@@ -18,6 +22,7 @@ export default async function AdminBlogEditPage({
         id,
       },
       include: {
+        translations: true,
         tags: {
           select: {
             tagId: true,
@@ -25,21 +30,20 @@ export default async function AdminBlogEditPage({
         },
       },
     }),
-    db.blogCategory.findMany({
+    db.blogCategoryTranslation.findMany({
       orderBy: [{ language: "asc" }, { name: "asc" }],
       select: {
-        id: true,
+        categoryId: true,
         name: true,
         language: true,
       },
     }),
-    db.blogTag.findMany({
-      orderBy: {
-        name: "asc",
-      },
+    db.blogTagTranslation.findMany({
+      orderBy: [{ language: "asc" }, { name: "asc" }],
       select: {
-        id: true,
+        tagId: true,
         name: true,
+        language: true,
       },
     }),
     db.user.findMany({
@@ -58,6 +62,12 @@ export default async function AdminBlogEditPage({
     notFound();
   }
 
+  const translation =
+    post.translations.find((item) => item.language === selectedLanguage) ??
+    post.translations.find((item) => item.language === locale) ??
+    post.translations[0] ??
+    null;
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-foreground">{t("admin.blog.editPost")}</h3>
@@ -70,13 +80,13 @@ export default async function AdminBlogEditPage({
           tags={tags}
           authors={authors}
           initialValues={{
-            title: post.title,
-            slug: post.slug,
-            excerpt: post.excerpt,
-            content: post.content,
-            coverImage: post.coverImage,
+            title: translation?.title ?? "",
+            slug: translation?.slug ?? "",
+            excerpt: translation?.excerpt ?? null,
+            content: translation?.content ?? "",
+            coverImage: translation?.coverImage ?? null,
             status: post.status,
-            language: post.language,
+            language: translation?.language ?? selectedLanguage,
             publishAt: post.publishAt,
             categoryId: post.categoryId,
             authorId: post.authorId,
@@ -87,4 +97,3 @@ export default async function AdminBlogEditPage({
     </div>
   );
 }
-

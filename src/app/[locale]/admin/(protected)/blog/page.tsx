@@ -38,10 +38,9 @@ export default async function AdminBlogPostsPage({
   const pageSize = 12;
 
   const normalizedSearch = query.q?.trim();
+  const categoryTranslationFilter = query.language ? { language: query.language } : {};
   const where = {
-    ...(query.status ? { status: query.status } : {}),
     ...(query.language ? { language: query.language } : {}),
-    ...(query.categoryId ? { categoryId: query.categoryId } : {}),
     ...(normalizedSearch
       ? {
           OR: [
@@ -60,27 +59,46 @@ export default async function AdminBlogPostsPage({
           ],
         }
       : {}),
+    ...(query.status || query.categoryId
+      ? {
+          post: {
+            ...(query.status ? { status: query.status } : {}),
+            ...(query.categoryId ? { categoryId: query.categoryId } : {}),
+          },
+        }
+      : {}),
   };
 
-  const [categories, totalItems, posts] = await Promise.all([
-    db.blogCategory.findMany({
+  const [categories, totalItems, translations] = await Promise.all([
+    db.blogCategoryTranslation.findMany({
       orderBy: [{ language: "asc" }, { name: "asc" }],
       select: {
-        id: true,
+        categoryId: true,
         name: true,
         language: true,
       },
     }),
-    db.blogPost.count({ where }),
-    db.blogPost.findMany({
+    db.blogPostTranslation.count({ where }),
+    db.blogPostTranslation.findMany({
       where,
       orderBy: [{ updatedAt: "desc" }],
       skip: (query.page - 1) * pageSize,
       take: pageSize,
       include: {
-        category: {
+        post: {
           select: {
-            name: true,
+            id: true,
+            status: true,
+            category: {
+              select: {
+                translations: {
+                  where: categoryTranslationFilter,
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -155,7 +173,7 @@ export default async function AdminBlogPostsPage({
         >
           <option value="">{t("admin.blog.allCategories")}</option>
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
+            <option key={`${category.categoryId}-${category.language}`} value={category.categoryId}>
               {category.name} ({category.language})
             </option>
           ))}
@@ -177,19 +195,21 @@ export default async function AdminBlogPostsPage({
           <span>{t("admin.blog.columns.actions")}</span>
         </div>
         <div className="divide-y divide-border">
-          {posts.length ? (
-            posts.map((post) => (
-              <div key={post.id} className="grid gap-2 px-4 py-4 md:grid-cols-[2fr_1fr_1fr_1fr_2fr] md:items-center md:gap-3">
+          {translations.length ? (
+            translations.map((translation) => (
+              <div key={`${translation.postId}-${translation.language}`} className="grid gap-2 px-4 py-4 md:grid-cols-[2fr_1fr_1fr_1fr_2fr] md:items-center md:gap-3">
                 <div>
-                  <p className="font-medium text-foreground">{post.title}</p>
-                  <p className="text-xs text-muted-foreground">{post.slug}</p>
+                  <p className="font-medium text-foreground">{translation.title}</p>
+                  <p className="text-xs text-muted-foreground">{translation.slug}</p>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {t(`admin.blog.status.${post.status.toLowerCase()}`)}
+                  {t(`admin.blog.status.${translation.post.status.toLowerCase()}`)}
                 </p>
-                <p className="text-sm text-muted-foreground">{post.language}</p>
-                <p className="text-sm text-muted-foreground">{post.category?.name ?? "-"}</p>
-                <PostRowActions id={post.id} status={post.status} />
+                <p className="text-sm text-muted-foreground">{translation.language}</p>
+                <p className="text-sm text-muted-foreground">
+                  {translation.post.category?.translations[0]?.name ?? "-"}
+                </p>
+                <PostRowActions id={translation.postId} status={translation.post.status} language={translation.language} />
               </div>
             ))
           ) : (
@@ -218,4 +238,3 @@ export default async function AdminBlogPostsPage({
     </div>
   );
 }
-

@@ -10,9 +10,10 @@ import { useLanguage } from "@/hooks/use-language";
 interface PostRowActionsProps {
   id: string;
   status: BlogPostStatus;
+  language: string;
 }
 
-export function PostRowActions({ id, status }: PostRowActionsProps) {
+export function PostRowActions({ id, status, language }: PostRowActionsProps) {
   const router = useRouter();
   const { t } = useLanguage();
   const [isBusy, setIsBusy] = useState(false);
@@ -68,7 +69,7 @@ export function PostRowActions({ id, status }: PostRowActionsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Link
-        href={`/admin/blog/${id}`}
+        href={`/admin/blog/${id}?language=${language}`}
         className="rounded-md border border-border px-2 py-1 text-xs text-foreground hover:bg-muted"
       >
         {t("admin.blog.edit")}
@@ -100,4 +101,3 @@ export function PostRowActions({ id, status }: PostRowActionsProps) {
     </div>
   );
 }
-

@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
   const [categoryRecord, tagRecord] = await Promise.all([
     category
-      ? db.blogCategory.findUnique({
+      ? db.blogCategoryTranslation.findUnique({
           where: {
             slug_language: {
               slug: category,
@@ -28,21 +28,26 @@ export async function GET(request: Request) {
             },
           },
           select: {
-            id: true,
+            categoryId: true,
             name: true,
             slug: true,
+            language: true,
           },
         })
       : null,
     tag
-      ? db.blogTag.findUnique({
+      ? db.blogTagTranslation.findUnique({
           where: {
-            slug: tag,
+            slug_language: {
+              slug: tag,
+              language: normalizedLanguage,
+            },
           },
           select: {
-            id: true,
+            tagId: true,
             name: true,
             slug: true,
+            language: true,
           },
         })
       : null,
@@ -63,8 +68,8 @@ export async function GET(request: Request) {
   const where = buildVisiblePostsWhere({
     now,
     language: normalizedLanguage,
-    categoryId: categoryRecord?.id,
-    tagId: tagRecord?.id,
+    categoryId: categoryRecord?.categoryId,
+    tagId: tagRecord?.tagId,
     search: q,
   });
 
@@ -76,11 +81,31 @@ export async function GET(request: Request) {
       skip: (page - 1) * pageSize,
       take: pageSize,
       include: {
+        translations: {
+          where: {
+            language: normalizedLanguage,
+          },
+          select: {
+            title: true,
+            slug: true,
+            excerpt: true,
+            content: true,
+            coverImage: true,
+            language: true,
+          },
+        },
         category: {
           select: {
             id: true,
-            name: true,
-            slug: true,
+            translations: {
+              where: {
+                language: normalizedLanguage,
+              },
+              select: {
+                name: true,
+                slug: true,
+              },
+            },
           },
         },
         tags: {
@@ -88,8 +113,15 @@ export async function GET(request: Request) {
             tag: {
               select: {
                 id: true,
-                name: true,
-                slug: true,
+                translations: {
+                  where: {
+                    language: normalizedLanguage,
+                  },
+                  select: {
+                    name: true,
+                    slug: true,
+                  },
+                },
               },
             },
           },
@@ -106,19 +138,32 @@ export async function GET(request: Request) {
   ]);
 
   return NextResponse.json({
-    items: posts.map((post) => ({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-      coverImage: post.coverImage,
-      language: post.language,
-      visibleAt: getVisibleAt(post).toISOString(),
-      readingTime: calcReadingTime(post.content),
-      category: post.category,
-      tags: post.tags.map((postTag) => postTag.tag),
-      author: post.author,
-    })),
+    items: posts.map((post) => {
+      const translation = post.translations[0];
+      return {
+        id: post.id,
+        title: translation?.title ?? "",
+        slug: translation?.slug ?? "",
+        excerpt: translation?.excerpt ?? null,
+        coverImage: translation?.coverImage ?? null,
+        language: translation?.language ?? normalizedLanguage,
+        visibleAt: getVisibleAt(post).toISOString(),
+        readingTime: calcReadingTime(translation?.content ?? ""),
+        category: post.category
+          ? {
+              id: post.category.id,
+              name: post.category.translations[0]?.name ?? "",
+              slug: post.category.translations[0]?.slug ?? "",
+            }
+          : null,
+        tags: post.tags.map((postTag) => ({
+          id: postTag.tag.id,
+          name: postTag.tag.translations[0]?.name ?? "",
+          slug: postTag.tag.translations[0]?.slug ?? "",
+        })),
+        author: post.author,
+      };
+    }),
     pagination: {
       page,
       pageSize,
@@ -133,4 +178,3 @@ export async function GET(request: Request) {
     },
   });
 }
-

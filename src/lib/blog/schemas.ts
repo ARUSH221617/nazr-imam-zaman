@@ -66,6 +66,7 @@ export const blogPostPatchSchema = z.object({
 });
 
 export const blogCategoryInputSchema = z.object({
+  categoryId: nullableTrimmedString,
   name: z.string().trim().min(1),
   slug: nullableTrimmedString,
   description: nullableTrimmedString,
@@ -73,9 +74,10 @@ export const blogCategoryInputSchema = z.object({
 });
 
 export const blogTagInputSchema = z.object({
+  tagId: nullableTrimmedString,
   name: z.string().trim().min(1),
   slug: nullableTrimmedString,
+  language: z.string().trim().min(1).default("fa"),
 });
 
 export type BlogPostInput = z.infer<typeof blogPostInputSchema>;
-

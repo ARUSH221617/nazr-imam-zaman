@@ -12,21 +12,20 @@ export default async function AdminBlogNewPage({
   const t = await getTranslations({ locale });
 
   const [categories, tags, authors] = await Promise.all([
-    db.blogCategory.findMany({
+    db.blogCategoryTranslation.findMany({
       orderBy: [{ language: "asc" }, { name: "asc" }],
       select: {
-        id: true,
+        categoryId: true,
         name: true,
         language: true,
       },
     }),
-    db.blogTag.findMany({
-      orderBy: {
-        name: "asc",
-      },
+    db.blogTagTranslation.findMany({
+      orderBy: [{ language: "asc" }, { name: "asc" }],
       select: {
-        id: true,
+        tagId: true,
         name: true,
+        language: true,
       },
     }),
     db.user.findMany({
@@ -56,4 +55,3 @@ export default async function AdminBlogNewPage({
     </div>
   );
 }
-
