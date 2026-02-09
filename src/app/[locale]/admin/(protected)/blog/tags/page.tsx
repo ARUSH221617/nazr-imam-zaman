@@ -10,14 +10,17 @@ export default async function AdminBlogTagsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
-  const tags = await db.blogTag.findMany({
-    orderBy: {
-      name: "asc",
-    },
+  const tags = await db.blogTagTranslation.findMany({
+    orderBy: [{ language: "asc" }, { name: "asc" }],
     include: {
-      _count: {
+      tag: {
         select: {
-          posts: true,
+          id: true,
+          _count: {
+            select: {
+              posts: true,
+            },
+          },
         },
       },
     },
@@ -28,13 +31,14 @@ export default async function AdminBlogTagsPage({
       <h3 className="text-lg font-semibold text-foreground">{t("admin.blog.tags")}</h3>
       <TagForm
         initialTags={tags.map((tag) => ({
-          id: tag.id,
+          id: tag.tagId,
+          tagId: tag.tagId,
           name: tag.name,
           slug: tag.slug,
-          postCount: tag._count.posts,
+          language: tag.language,
+          postCount: tag.tag._count.posts,
         }))}
       />
     </div>
   );
 }
-

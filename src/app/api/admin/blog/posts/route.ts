@@ -13,7 +13,7 @@ import { ensureUniqueSlug, slugify } from "@/lib/blog/slug";
 import { resolveStatusDates } from "@/lib/blog/status";
 
 const getExistingPostSlug = async (slug: string, language: string) => {
-  return db.blogPost.findUnique({
+  return db.blogPostTranslation.findUnique({
     where: {
       slug_language: {
         slug,
@@ -97,10 +97,9 @@ export async function GET(request: Request) {
 
   const { page, pageSize, q, status, language, categoryId } = parsedQuery.data;
   const normalizedSearch = q?.trim();
+  const categoryTranslationFilter = language ? { language } : {};
   const where = {
-    ...(status ? { status } : {}),
     ...(language ? { language } : {}),
-    ...(categoryId ? { categoryId } : {}),
     ...(normalizedSearch
       ? {
           OR: [
@@ -125,34 +124,57 @@ export async function GET(request: Request) {
           ],
         }
       : {}),
+    ...(status || categoryId
+      ? {
+          post: {
+            ...(status ? { status } : {}),
+            ...(categoryId ? { categoryId } : {}),
+          },
+        }
+      : {}),
   };
 
-  const [totalItems, posts] = await Promise.all([
-    db.blogPost.count({ where }),
-    db.blogPost.findMany({
+  const [totalItems, translations] = await Promise.all([
+    db.blogPostTranslation.count({ where }),
+    db.blogPostTranslation.findMany({
       where,
       orderBy: [{ updatedAt: "desc" }],
       skip: (page - 1) * pageSize,
       take: pageSize,
       include: {
-        category: {
+        post: {
           select: {
             id: true,
-            name: true,
-            slug: true,
-            language: true,
-          },
-        },
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        _count: {
-          select: {
-            tags: true,
+            status: true,
+            categoryId: true,
+            authorId: true,
+            updatedAt: true,
+            category: {
+              select: {
+                id: true,
+                translations: {
+                  where: categoryTranslationFilter,
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    language: true,
+                  },
+                },
+              },
+            },
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            _count: {
+              select: {
+                tags: true,
+              },
+            },
           },
         },
       },
@@ -160,7 +182,26 @@ export async function GET(request: Request) {
   ]);
 
   return NextResponse.json({
-    items: posts,
+    items: translations.map((translation) => ({
+      id: translation.postId,
+      title: translation.title,
+      slug: translation.slug,
+      excerpt: translation.excerpt,
+      content: translation.content,
+      coverImage: translation.coverImage,
+      language: translation.language,
+      status: translation.post.status,
+      category: translation.post.category
+        ? {
+            id: translation.post.category.id,
+            name: translation.post.category.translations[0]?.name ?? "-",
+            slug: translation.post.category.translations[0]?.slug ?? "",
+            language: translation.post.category.translations[0]?.language ?? translation.language,
+          }
+        : null,
+      author: translation.post.author,
+      _count: translation.post._count,
+    })),
     pagination: {
       page,
       pageSize,
@@ -191,6 +232,7 @@ export async function POST(request: Request) {
               tagId: true,
             },
           },
+          translations: true,
         },
       });
 
@@ -198,21 +240,32 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "not_found" }, { status: 404 });
       }
 
-      const duplicatedSlug = await ensureUniqueSlug(
-        slugify(`${source.slug}-copy`) || `post-${Date.now()}`,
-        async (candidateSlug) =>
-          Boolean(await getExistingPostSlug(candidateSlug, source.language)),
+      const translationPayloads = await Promise.all(
+        source.translations.map(async (translation) => {
+          const baseSlug =
+            slugify(`${translation.slug}-copy`) ||
+            slugify(`${translation.title}-copy`) ||
+            `post-${Date.now()}`;
+          const duplicatedSlug = await ensureUniqueSlug(
+            baseSlug,
+            async (candidateSlug) =>
+              Boolean(await getExistingPostSlug(candidateSlug, translation.language)),
+          );
+
+          return {
+            title: `${translation.title} (Copy)`,
+            slug: duplicatedSlug,
+            excerpt: translation.excerpt,
+            content: translation.content,
+            coverImage: translation.coverImage,
+            language: translation.language,
+          };
+        }),
       );
 
       const duplicatedPost = await db.blogPost.create({
         data: {
-          title: `${source.title} (Copy)`,
-          slug: duplicatedSlug,
-          excerpt: source.excerpt,
-          content: source.content,
-          coverImage: source.coverImage,
           status: BlogPostStatus.DRAFT,
-          language: source.language,
           publishAt: null,
           publishedAt: null,
           categoryId: source.categoryId,
@@ -224,6 +277,9 @@ export async function POST(request: Request) {
                 })),
               }
             : undefined,
+          translations: {
+            create: translationPayloads,
+          },
         },
       });
 
@@ -255,13 +311,7 @@ export async function POST(request: Request) {
 
     const createdPost = await db.blogPost.create({
       data: {
-        title: data.title,
-        slug: uniqueSlug,
-        excerpt: data.excerpt,
-        content: data.content,
-        coverImage: data.coverImage,
         status: data.status,
-        language: data.language,
         publishAt,
         publishedAt,
         categoryId: data.categoryId,
@@ -273,6 +323,16 @@ export async function POST(request: Request) {
               })),
             }
           : undefined,
+        translations: {
+          create: {
+            title: data.title,
+            slug: uniqueSlug,
+            excerpt: data.excerpt,
+            content: data.content,
+            coverImage: data.coverImage,
+            language: data.language,
+          },
+        },
       },
       include: {
         tags: {
@@ -280,6 +340,7 @@ export async function POST(request: Request) {
             tag: true,
           },
         },
+        translations: true,
       },
     });
 
@@ -302,4 +363,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
-

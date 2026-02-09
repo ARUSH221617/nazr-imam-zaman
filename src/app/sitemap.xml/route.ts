@@ -10,17 +10,23 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const siteUrl = getSiteUrl();
   const now = new Date();
-  const posts = await db.blogPost.findMany({
-    where: buildVisiblePostsWhere({ now }),
+  const posts = await db.blogPostTranslation.findMany({
+    where: {
+      post: buildVisiblePostsWhere({ now }),
+    },
     select: {
       slug: true,
       language: true,
-      updatedAt: true,
-      publishedAt: true,
-      publishAt: true,
-      createdAt: true,
+      post: {
+        select: {
+          updatedAt: true,
+          publishedAt: true,
+          publishAt: true,
+          createdAt: true,
+        },
+      },
     },
-    orderBy: [{ publishedAt: "desc" }, { publishAt: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ updatedAt: "desc" }],
   });
 
   const staticUrls = routing.locales.map(
@@ -33,7 +39,11 @@ export async function GET() {
   );
 
   const postUrls = posts.map((post) => {
-    const lastMod = (post.publishedAt ?? post.publishAt ?? post.createdAt).toISOString();
+    const lastMod = (
+      post.post.publishedAt ??
+      post.post.publishAt ??
+      post.post.createdAt
+    ).toISOString();
     return `
     <url>
       <loc>${siteUrl}/${post.language}/blog/${post.slug}</loc>

@@ -12,14 +12,17 @@ export async function GET() {
     return authError;
   }
 
-  const tags = await db.blogTag.findMany({
-    orderBy: {
-      name: "asc",
-    },
+  const tags = await db.blogTagTranslation.findMany({
+    orderBy: [{ language: "asc" }, { name: "asc" }],
     include: {
-      _count: {
+      tag: {
         select: {
-          posts: true,
+          id: true,
+          _count: {
+            select: {
+              posts: true,
+            },
+          },
         },
       },
     },
@@ -27,8 +30,12 @@ export async function GET() {
 
   return NextResponse.json({
     items: tags.map((tag) => ({
-      ...tag,
-      postCount: tag._count.posts,
+      id: tag.tagId,
+      tagId: tag.tagId,
+      name: tag.name,
+      slug: tag.slug,
+      language: tag.language,
+      postCount: tag.tag._count.posts,
     })),
   });
 }
@@ -42,23 +49,37 @@ export async function POST(request: Request) {
   try {
     const payload = blogTagInputSchema.parse(await request.json());
     const baseSlug = payload.slug || slugify(payload.name) || `tag-${Date.now()}`;
-    const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) =>
-      Boolean(
-        await db.blogTag.findUnique({
-          where: {
+    const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) => {
+      const existing = await db.blogTagTranslation.findUnique({
+        where: {
+          slug_language: {
             slug: candidateSlug,
+            language: payload.language,
           },
-          select: {
-            id: true,
-          },
-        }),
-      ),
-    );
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    const created = await db.blogTag.create({
+      return Boolean(existing);
+    });
+
+    const created = await db.blogTagTranslation.create({
       data: {
+        tag:
+          payload.tagId === null
+            ? {
+                create: {},
+              }
+            : {
+                connect: {
+                  id: payload.tagId,
+                },
+              },
         name: payload.name,
         slug: uniqueSlug,
+        language: payload.language,
       },
     });
 
@@ -71,4 +92,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
-

@@ -28,7 +28,7 @@ export default async function BlogCategoryPage({
   });
   const currentQuery = query.success ? query.data : { page: 1, q: "" };
 
-  const category = await db.blogCategory.findUnique({
+  const category = await db.blogCategoryTranslation.findUnique({
     where: {
       slug_language: {
         slug,
@@ -36,7 +36,7 @@ export default async function BlogCategoryPage({
       },
     },
     select: {
-      id: true,
+      categoryId: true,
       name: true,
       slug: true,
     },
@@ -49,7 +49,7 @@ export default async function BlogCategoryPage({
   const pageSize = 10;
   const where = buildVisiblePostsWhere({
     language: locale,
-    categoryId: category.id,
+    categoryId: category.categoryId,
     search: currentQuery.q,
   });
 
@@ -61,10 +61,29 @@ export default async function BlogCategoryPage({
       skip: (currentQuery.page - 1) * pageSize,
       take: pageSize,
       include: {
+        translations: {
+          where: {
+            language: locale,
+          },
+          select: {
+            title: true,
+            slug: true,
+            excerpt: true,
+            content: true,
+            coverImage: true,
+          },
+        },
         category: {
           select: {
-            name: true,
-            slug: true,
+            translations: {
+              where: {
+                language: locale,
+              },
+              select: {
+                name: true,
+                slug: true,
+              },
+            },
           },
         },
       },
@@ -107,7 +126,26 @@ export default async function BlogCategoryPage({
       {posts.length ? (
         <section className="grid gap-6">
           {posts.map((post) => (
-            <BlogPostCard key={post.id} post={post} locale={locale} />
+            <BlogPostCard
+              key={post.id}
+              post={{
+                title: post.translations[0]?.title ?? "",
+                slug: post.translations[0]?.slug ?? "",
+                excerpt: post.translations[0]?.excerpt ?? null,
+                content: post.translations[0]?.content ?? "",
+                coverImage: post.translations[0]?.coverImage ?? null,
+                publishedAt: post.publishedAt,
+                publishAt: post.publishAt,
+                createdAt: post.createdAt,
+                category: post.category?.translations[0]
+                  ? {
+                      name: post.category.translations[0].name,
+                      slug: post.category.translations[0].slug,
+                    }
+                  : null,
+              }}
+              locale={locale}
+            />
           ))}
           <BlogPagination page={currentQuery.page} totalPages={totalPages} buildHref={createHref} />
         </section>
@@ -119,4 +157,3 @@ export default async function BlogCategoryPage({
     </main>
   );
 }
-

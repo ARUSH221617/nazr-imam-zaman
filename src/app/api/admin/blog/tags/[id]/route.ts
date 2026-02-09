@@ -7,7 +7,7 @@ import { blogTagInputSchema } from "@/lib/blog/schemas";
 import { ensureUniqueSlug, slugify } from "@/lib/blog/slug";
 
 export async function GET(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const authError = await requireAdminCookies();
@@ -16,9 +16,24 @@ export async function GET(
   }
 
   const { id } = await params;
-  const tag = await db.blogTag.findUnique({
-    where: { id },
-  });
+  const language = new URL(request.url).searchParams.get("language")?.trim();
+  const tag = language
+    ? await db.blogTagTranslation.findUnique({
+        where: {
+          tagId_language: {
+            tagId: id,
+            language,
+          },
+        },
+      })
+    : await db.blogTagTranslation.findFirst({
+        where: {
+          tagId: id,
+        },
+        orderBy: {
+          language: "asc",
+        },
+      });
 
   if (!tag) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
@@ -40,25 +55,41 @@ export async function PUT(
   try {
     const payload = blogTagInputSchema.parse(await request.json());
     const baseSlug = payload.slug || slugify(payload.name) || `tag-${Date.now()}`;
-    const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) =>
-      Boolean(
-        await db.blogTag.findFirst({
-          where: {
-            slug: candidateSlug,
-            id: {
-              not: id,
-            },
+    const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) => {
+      const existing = await db.blogTagTranslation.findFirst({
+        where: {
+          slug: candidateSlug,
+          language: payload.language,
+          tagId: {
+            not: id,
           },
-          select: {
-            id: true,
-          },
-        }),
-      ),
-    );
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    const updated = await db.blogTag.update({
-      where: { id },
-      data: {
+      return Boolean(existing);
+    });
+
+    const updated = await db.blogTagTranslation.upsert({
+      where: {
+        tagId_language: {
+          tagId: id,
+          language: payload.language,
+        },
+      },
+      create: {
+        tag: {
+          connect: {
+            id,
+          },
+        },
+        name: payload.name,
+        slug: uniqueSlug,
+        language: payload.language,
+      },
+      update: {
         name: payload.name,
         slug: uniqueSlug,
       },
@@ -75,7 +106,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const authError = await requireAdminCookies();
@@ -85,13 +116,34 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await db.blogTag.delete({
-      where: { id },
-    });
+    const language = new URL(request.url).searchParams.get("language")?.trim();
+    if (language) {
+      await db.blogTagTranslation.delete({
+        where: {
+          tagId_language: {
+            tagId: id,
+            language,
+          },
+        },
+      });
+      const remaining = await db.blogTagTranslation.count({
+        where: {
+          tagId: id,
+        },
+      });
+      if (!remaining) {
+        await db.blogTag.delete({
+          where: { id },
+        });
+      }
+    } else {
+      await db.blogTag.delete({
+        where: { id },
+      });
+    }
 
     return NextResponse.json({ status: "ok" });
   } catch {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 }
-

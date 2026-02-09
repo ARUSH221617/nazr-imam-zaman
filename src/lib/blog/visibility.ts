@@ -34,10 +34,6 @@ export const buildVisiblePostsWhere = ({
     },
   ];
 
-  if (language) {
-    filters.push({ language });
-  }
-
   if (categoryId) {
     filters.push({ categoryId });
   }
@@ -53,28 +49,37 @@ export const buildVisiblePostsWhere = ({
   }
 
   const normalizedSearch = search?.trim();
-  if (normalizedSearch) {
+  if (language || normalizedSearch) {
     filters.push({
-      OR: [
-        {
-          title: {
-            contains: normalizedSearch,
-            mode: "insensitive",
-          },
+      translations: {
+        some: {
+          ...(language ? { language } : {}),
+          ...(normalizedSearch
+            ? {
+                OR: [
+                  {
+                    title: {
+                      contains: normalizedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    excerpt: {
+                      contains: normalizedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    content: {
+                      contains: normalizedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              }
+            : {}),
         },
-        {
-          excerpt: {
-            contains: normalizedSearch,
-            mode: "insensitive",
-          },
-        },
-        {
-          content: {
-            contains: normalizedSearch,
-            mode: "insensitive",
-          },
-        },
-      ],
+      },
     });
   }
 
@@ -82,4 +87,3 @@ export const buildVisiblePostsWhere = ({
     AND: filters,
   };
 };
-

@@ -2,15 +2,25 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 
-export async function GET() {
-  const tags = await db.blogTag.findMany({
-    orderBy: {
-      name: "asc",
-    },
+export async function GET(request: Request) {
+  const searchParams = new URL(request.url).searchParams;
+  const language = searchParams.get("language")?.trim();
+  const tags = await db.blogTagTranslation.findMany({
+    where: language
+      ? {
+          language,
+        }
+      : undefined,
+    orderBy: [{ language: "asc" }, { name: "asc" }],
     include: {
-      _count: {
+      tag: {
         select: {
-          posts: true,
+          id: true,
+          _count: {
+            select: {
+              posts: true,
+            },
+          },
         },
       },
     },
@@ -18,11 +28,11 @@ export async function GET() {
 
   return NextResponse.json({
     items: tags.map((tag) => ({
-      id: tag.id,
+      id: tag.tagId,
       name: tag.name,
       slug: tag.slug,
-      postCount: tag._count.posts,
+      language: tag.language,
+      postCount: tag.tag._count.posts,
     })),
   });
 }
-

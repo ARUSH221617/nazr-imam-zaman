@@ -7,7 +7,7 @@ import { blogCategoryInputSchema } from "@/lib/blog/schemas";
 import { ensureUniqueSlug, slugify } from "@/lib/blog/slug";
 
 export async function GET(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const authError = await requireAdminCookies();
@@ -16,9 +16,24 @@ export async function GET(
   }
 
   const { id } = await params;
-  const category = await db.blogCategory.findUnique({
-    where: { id },
-  });
+  const language = new URL(request.url).searchParams.get("language")?.trim();
+  const category = language
+    ? await db.blogCategoryTranslation.findUnique({
+        where: {
+          categoryId_language: {
+            categoryId: id,
+            language,
+          },
+        },
+      })
+    : await db.blogCategoryTranslation.findFirst({
+        where: {
+          categoryId: id,
+        },
+        orderBy: {
+          language: "asc",
+        },
+      });
 
   if (!category) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
@@ -41,30 +56,45 @@ export async function PUT(
     const payload = blogCategoryInputSchema.parse(await request.json());
     const baseSlug =
       payload.slug || slugify(payload.name) || `category-${Date.now()}`;
-    const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) =>
-      Boolean(
-        await db.blogCategory.findFirst({
-          where: {
-            slug: candidateSlug,
-            language: payload.language,
-            id: {
-              not: id,
-            },
+    const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) => {
+      const existing = await db.blogCategoryTranslation.findFirst({
+        where: {
+          slug: candidateSlug,
+          language: payload.language,
+          categoryId: {
+            not: id,
           },
-          select: {
-            id: true,
-          },
-        }),
-      ),
-    );
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    const updated = await db.blogCategory.update({
-      where: { id },
-      data: {
+      return Boolean(existing);
+    });
+
+    const updated = await db.blogCategoryTranslation.upsert({
+      where: {
+        categoryId_language: {
+          categoryId: id,
+          language: payload.language,
+        },
+      },
+      create: {
+        category: {
+          connect: {
+            id,
+          },
+        },
         name: payload.name,
         slug: uniqueSlug,
         description: payload.description,
         language: payload.language,
+      },
+      update: {
+        name: payload.name,
+        slug: uniqueSlug,
+        description: payload.description,
       },
     });
 
@@ -89,13 +119,34 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await db.blogCategory.delete({
-      where: { id },
-    });
+    const language = new URL(request.url).searchParams.get("language")?.trim();
+    if (language) {
+      await db.blogCategoryTranslation.delete({
+        where: {
+          categoryId_language: {
+            categoryId: id,
+            language,
+          },
+        },
+      });
+      const remaining = await db.blogCategoryTranslation.count({
+        where: {
+          categoryId: id,
+        },
+      });
+      if (!remaining) {
+        await db.blogCategory.delete({
+          where: { id },
+        });
+      }
+    } else {
+      await db.blogCategory.delete({
+        where: { id },
+      });
+    }
 
     return NextResponse.json({ status: "ok" });
   } catch {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 }
-

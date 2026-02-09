@@ -18,9 +18,11 @@ const escapeXml = (value: string): string =>
 export async function GET() {
   const siteUrl = getSiteUrl();
   const now = new Date();
-  const posts = await db.blogPost.findMany({
-    where: buildVisiblePostsWhere({ now }),
-    orderBy: [{ publishedAt: "desc" }, { publishAt: "desc" }, { createdAt: "desc" }],
+  const posts = await db.blogPostTranslation.findMany({
+    where: {
+      post: buildVisiblePostsWhere({ now }),
+    },
+    orderBy: [{ updatedAt: "desc" }],
     take: 20,
     select: {
       title: true,
@@ -28,16 +30,20 @@ export async function GET() {
       excerpt: true,
       content: true,
       language: true,
-      publishedAt: true,
-      publishAt: true,
-      createdAt: true,
+      post: {
+        select: {
+          publishedAt: true,
+          publishAt: true,
+          createdAt: true,
+        },
+      },
     },
   });
 
   const items = posts
     .map((post) => {
       const url = `${siteUrl}/${post.language}/blog/${post.slug}`;
-      const pubDate = getVisibleAt(post).toUTCString();
+      const pubDate = getVisibleAt(post.post).toUTCString();
       const description = post.excerpt ?? post.content.slice(0, 160);
 
       return `

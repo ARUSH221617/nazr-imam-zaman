@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   }
 
   const language = new URL(request.url).searchParams.get("language")?.trim();
-  const categories = await db.blogCategory.findMany({
+  const categories = await db.blogCategoryTranslation.findMany({
     where: language
       ? {
           language,
@@ -21,9 +21,14 @@ export async function GET(request: Request) {
       : undefined,
     orderBy: [{ language: "asc" }, { name: "asc" }],
     include: {
-      _count: {
+      category: {
         select: {
-          posts: true,
+          id: true,
+          _count: {
+            select: {
+              posts: true,
+            },
+          },
         },
       },
     },
@@ -31,8 +36,13 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     items: categories.map((category) => ({
-      ...category,
-      postCount: category._count.posts,
+      id: category.categoryId,
+      categoryId: category.categoryId,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      language: category.language,
+      postCount: category.category._count.posts,
     })),
   });
 }
@@ -49,7 +59,7 @@ export async function POST(request: Request) {
       payload.slug || slugify(payload.name) || `category-${Date.now()}`;
     const uniqueSlug = await ensureUniqueSlug(baseSlug, async (candidateSlug) =>
       Boolean(
-        await db.blogCategory.findUnique({
+        await db.blogCategoryTranslation.findUnique({
           where: {
             slug_language: {
               slug: candidateSlug,
@@ -63,8 +73,18 @@ export async function POST(request: Request) {
       ),
     );
 
-    const created = await db.blogCategory.create({
+    const created = await db.blogCategoryTranslation.create({
       data: {
+        category:
+          payload.categoryId === null
+            ? {
+                create: {},
+              }
+            : {
+                connect: {
+                  id: payload.categoryId,
+                },
+              },
         name: payload.name,
         slug: uniqueSlug,
         description: payload.description,
@@ -81,4 +101,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
-

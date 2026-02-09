@@ -14,28 +14,47 @@ import { buildVisiblePostsWhere } from "@/lib/blog/visibility";
 import { db } from "@/lib/db";
 
 const fetchVisiblePost = async (slug: string, locale: string) => {
-  return db.blogPost.findFirst({
+  return db.blogPostTranslation.findFirst({
     where: {
       slug,
-      ...buildVisiblePostsWhere({
+      language: locale,
+      post: buildVisiblePostsWhere({
         language: locale,
       }),
     },
     include: {
-      category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-      tags: {
+      post: {
         include: {
-          tag: {
+          category: {
             select: {
               id: true,
-              name: true,
-              slug: true,
+              translations: {
+                where: {
+                  language: locale,
+                },
+                select: {
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  translations: {
+                    where: {
+                      language: locale,
+                    },
+                    select: {
+                      name: true,
+                      slug: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -89,18 +108,18 @@ export default async function BlogPostPage({
   }
 
   const readingTime = calcReadingTime(post.content);
-  const visibleAt = getVisibleAt(post);
-  const postTagIds = post.tags.map((postTag) => postTag.tagId);
+  const visibleAt = getVisibleAt(post.post);
+  const postTagIds = post.post.tags.map((postTag) => postTag.tagId);
   const relatedPosts = await db.blogPost.findMany({
     where: {
       id: {
-        not: post.id,
+        not: post.postId,
       },
       ...buildVisiblePostsWhere({
         language: locale,
       }),
       OR: [
-        ...(post.categoryId ? [{ categoryId: post.categoryId }] : []),
+        ...(post.post.categoryId ? [{ categoryId: post.post.categoryId }] : []),
         ...(postTagIds.length
           ? [
               {
@@ -118,11 +137,17 @@ export default async function BlogPostPage({
     },
     take: 4,
     orderBy: [{ publishedAt: "desc" }, { publishAt: "desc" }, { createdAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      excerpt: true,
+    include: {
+      translations: {
+        where: {
+          language: locale,
+        },
+        select: {
+          title: true,
+          slug: true,
+          excerpt: true,
+        },
+      },
     },
   });
 
@@ -145,21 +170,21 @@ export default async function BlogPostPage({
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span>{formatDate(visibleAt, locale)}</span>
             <span>{readingTime} min read</span>
-            {post.category ? (
-              <Link href={`/blog/category/${post.category.slug}`} className="text-primary">
-                {post.category.name}
+            {post.post.category?.translations[0] ? (
+              <Link href={`/blog/category/${post.post.category.translations[0].slug}`} className="text-primary">
+                {post.post.category.translations[0].name}
               </Link>
             ) : null}
           </div>
-          {post.tags.length ? (
+          {post.post.tags.length ? (
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((postTag) => (
+              {post.post.tags.map((postTag) => (
                 <Link
                   key={postTag.tagId}
-                  href={`/blog/tag/${postTag.tag.slug}`}
+                  href={`/blog/tag/${postTag.tag.translations[0]?.slug ?? ""}`}
                   className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-primary"
                 >
-                  #{postTag.tag.name}
+                  #{postTag.tag.translations[0]?.name ?? ""}
                 </Link>
               ))}
             </div>
@@ -223,12 +248,16 @@ export default async function BlogPostPage({
             {relatedPosts.map((relatedPost) => (
               <Link
                 key={relatedPost.id}
-                href={`/blog/${relatedPost.slug}`}
+                href={`/blog/${relatedPost.translations[0]?.slug ?? ""}`}
                 className="rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:bg-primary/5"
               >
-                <h3 className="text-base font-semibold text-foreground">{relatedPost.title}</h3>
-                {relatedPost.excerpt ? (
-                  <p className="mt-2 text-sm text-muted-foreground">{relatedPost.excerpt}</p>
+                <h3 className="text-base font-semibold text-foreground">
+                  {relatedPost.translations[0]?.title ?? ""}
+                </h3>
+                {relatedPost.translations[0]?.excerpt ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {relatedPost.translations[0]?.excerpt}
+                  </p>
                 ) : null}
               </Link>
             ))}
@@ -238,4 +267,3 @@ export default async function BlogPostPage({
     </main>
   );
 }
-

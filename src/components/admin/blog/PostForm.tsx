@@ -31,8 +31,8 @@ interface PostFormProps {
   locale: string;
   mode: "create" | "edit";
   postId?: string;
-  categories: Array<{ id: string; name: string; language: string }>;
-  tags: Array<{ id: string; name: string }>;
+  categories: Array<{ categoryId: string; name: string; language: string }>;
+  tags: Array<{ tagId: string; name: string; language: string }>;
   authors: Array<{ id: string; name: string | null; email: string }>;
   initialValues?: {
     title: string;
@@ -101,6 +101,18 @@ export function PostForm({
     resolver: zodResolver(postFormSchema),
     defaultValues,
   });
+  const selectedLanguage = form.watch("language");
+
+  const visibleCategories = useMemo(() => {
+    const filtered = categories.filter((category) => category.language === selectedLanguage);
+    return filtered.length ? filtered : categories;
+  }, [categories, selectedLanguage]);
+
+  const visibleTags = useMemo(() => {
+    const filtered = tags.filter((tag) => tag.language === selectedLanguage);
+    const source = filtered.length ? filtered : tags;
+    return source.map((tag) => ({ id: tag.tagId, name: tag.name }));
+  }, [selectedLanguage, tags]);
 
   const handleUpload = async () => {
     if (!uploadFile) {
@@ -268,8 +280,8 @@ export function PostForm({
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="">{t("admin.blog.form.none")}</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+            {visibleCategories.map((category) => (
+              <option key={`${category.categoryId}-${category.language}`} value={category.categoryId}>
                 {category.name} ({category.language})
               </option>
             ))}
@@ -282,7 +294,7 @@ export function PostForm({
             name="tagIds"
             render={({ field }) => (
               <TagMultiSelect
-                tags={tags}
+                tags={visibleTags}
                 value={field.value ?? []}
                 onChange={field.onChange}
                 placeholder={t("admin.blog.form.tagsPlaceholder")}

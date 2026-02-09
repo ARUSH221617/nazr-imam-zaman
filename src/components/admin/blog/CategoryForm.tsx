@@ -6,6 +6,7 @@ import { useLanguage } from "@/hooks/use-language";
 
 interface CategoryItem {
   id: string;
+  categoryId: string;
   name: string;
   slug: string;
   description: string | null;
@@ -19,6 +20,7 @@ interface CategoryFormProps {
 
 const initialFormState = {
   id: "",
+  categoryId: "",
   name: "",
   slug: "",
   description: "",
@@ -50,6 +52,7 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
   const onEdit = (category: CategoryItem) => {
     setFormState({
       id: category.id,
+      categoryId: category.categoryId,
       name: category.name,
       slug: category.slug,
       description: category.description ?? "",
@@ -57,14 +60,17 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
     });
   };
 
-  const onDelete = async (id: string) => {
+  const onDelete = async (categoryId: string, language: string) => {
     if (!window.confirm(t("admin.blog.deleteConfirm"))) {
       return;
     }
 
-    const response = await fetch(`/api/admin/blog/categories/${id}`, {
+    const response = await fetch(
+      `/api/admin/blog/categories/${categoryId}?language=${language}`,
+      {
       method: "DELETE",
-    });
+      },
+    );
 
     if (response.ok) {
       await refreshCategories();
@@ -88,6 +94,7 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          categoryId: formState.categoryId || null,
           name: formState.name,
           slug: formState.slug || null,
           description: formState.description || null,
@@ -111,7 +118,22 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={onSubmit} className="grid gap-3 rounded-xl border border-border bg-card p-4 md:grid-cols-5">
+      <form onSubmit={onSubmit} className="grid gap-3 rounded-xl border border-border bg-card p-4 md:grid-cols-6">
+        <select
+          value={formState.categoryId}
+          onChange={(event) =>
+            setFormState((prev) => ({ ...prev, categoryId: event.target.value }))
+          }
+          disabled={Boolean(formState.id)}
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-60"
+        >
+          <option value="">{t("admin.blog.form.none")}</option>
+          {categories.map((category) => (
+            <option key={`${category.categoryId}-${category.language}`} value={category.categoryId}>
+              {category.name} ({category.language})
+            </option>
+          ))}
+        </select>
         <input
           value={formState.name}
           onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
@@ -170,7 +192,7 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
       <div className="space-y-3">
         {categories.map((category) => (
           <div
-            key={category.id}
+            key={`${category.categoryId}-${category.language}`}
             className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between"
           >
             <div>
@@ -189,7 +211,7 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
               </button>
               <button
                 type="button"
-                onClick={() => onDelete(category.id)}
+                onClick={() => onDelete(category.categoryId, category.language)}
                 className="rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
               >
                 {t("admin.blog.delete")}
@@ -201,4 +223,3 @@ export function CategoryForm({ initialCategories }: CategoryFormProps) {
     </div>
   );
 }
-

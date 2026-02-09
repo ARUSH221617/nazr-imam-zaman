@@ -42,7 +42,7 @@ export default async function BlogIndexPage({
       };
 
   const [categories, tags, selectedCategory, selectedTag] = await Promise.all([
-    db.blogCategory.findMany({
+    db.blogCategoryTranslation.findMany({
       where: {
         language: locale,
       },
@@ -50,23 +50,26 @@ export default async function BlogIndexPage({
         name: "asc",
       },
       select: {
-        id: true,
+        categoryId: true,
         name: true,
         slug: true,
       },
     }),
-    db.blogTag.findMany({
+    db.blogTagTranslation.findMany({
+      where: {
+        language: locale,
+      },
       orderBy: {
         name: "asc",
       },
       select: {
-        id: true,
+        tagId: true,
         name: true,
         slug: true,
       },
     }),
     query.category
-      ? db.blogCategory.findUnique({
+      ? db.blogCategoryTranslation.findUnique({
           where: {
             slug_language: {
               slug: query.category,
@@ -74,19 +77,22 @@ export default async function BlogIndexPage({
             },
           },
           select: {
-            id: true,
+            categoryId: true,
             name: true,
             slug: true,
           },
         })
       : null,
     query.tag
-      ? db.blogTag.findUnique({
+      ? db.blogTagTranslation.findUnique({
           where: {
-            slug: query.tag,
+            slug_language: {
+              slug: query.tag,
+              language: locale,
+            },
           },
           select: {
-            id: true,
+            tagId: true,
             name: true,
             slug: true,
           },
@@ -101,8 +107,8 @@ export default async function BlogIndexPage({
     ? { id: { equals: "__no_match__" } }
     : buildVisiblePostsWhere({
         language: locale,
-        categoryId: selectedCategory?.id,
-        tagId: selectedTag?.id,
+        categoryId: selectedCategory?.categoryId,
+        tagId: selectedTag?.tagId,
         search: query.q,
       });
 
@@ -114,10 +120,29 @@ export default async function BlogIndexPage({
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
       include: {
+        translations: {
+          where: {
+            language: locale,
+          },
+          select: {
+            title: true,
+            slug: true,
+            excerpt: true,
+            content: true,
+            coverImage: true,
+          },
+        },
         category: {
           select: {
-            name: true,
-            slug: true,
+            translations: {
+              where: {
+                language: locale,
+              },
+              select: {
+                name: true,
+                slug: true,
+              },
+            },
           },
         },
       },
@@ -164,7 +189,7 @@ export default async function BlogIndexPage({
         >
           <option value="">{t("blog.allCategories")}</option>
           {categories.map((category) => (
-            <option key={category.id} value={category.slug}>
+            <option key={category.categoryId} value={category.slug}>
               {category.name}
             </option>
           ))}
@@ -176,7 +201,7 @@ export default async function BlogIndexPage({
         >
           <option value="">{t("blog.allTags")}</option>
           {tags.map((tag) => (
-            <option key={tag.id} value={tag.slug}>
+            <option key={tag.tagId} value={tag.slug}>
               {tag.name}
             </option>
           ))}
@@ -192,7 +217,26 @@ export default async function BlogIndexPage({
       {posts.length ? (
         <section className="grid gap-6">
           {posts.map((post) => (
-            <BlogPostCard key={post.id} post={post} locale={locale} />
+            <BlogPostCard
+              key={post.id}
+              post={{
+                title: post.translations[0]?.title ?? "",
+                slug: post.translations[0]?.slug ?? "",
+                excerpt: post.translations[0]?.excerpt ?? null,
+                content: post.translations[0]?.content ?? "",
+                coverImage: post.translations[0]?.coverImage ?? null,
+                publishedAt: post.publishedAt,
+                publishAt: post.publishAt,
+                createdAt: post.createdAt,
+                category: post.category?.translations[0]
+                  ? {
+                      name: post.category.translations[0].name,
+                      slug: post.category.translations[0].slug,
+                    }
+                  : null,
+              }}
+              locale={locale}
+            />
           ))}
           <BlogPagination page={query.page} totalPages={totalPages} buildHref={createHref} />
         </section>
@@ -204,4 +248,3 @@ export default async function BlogIndexPage({
     </main>
   );
 }
-

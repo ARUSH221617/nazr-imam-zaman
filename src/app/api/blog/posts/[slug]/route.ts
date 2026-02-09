@@ -14,38 +14,57 @@ export async function GET(
   const language = searchParams.get("language")?.trim() || "fa";
   const now = new Date();
 
-  const post = await db.blogPost.findFirst({
+  const post = await db.blogPostTranslation.findFirst({
     where: {
       slug,
-      ...buildVisiblePostsWhere({
+      language,
+      post: buildVisiblePostsWhere({
         now,
         language,
       }),
     },
     include: {
-      category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-      tags: {
+      post: {
         include: {
-          tag: {
+          category: {
+            select: {
+              id: true,
+              translations: {
+                where: {
+                  language,
+                },
+                select: {
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  translations: {
+                    where: {
+                      language,
+                    },
+                    select: {
+                      name: true,
+                      slug: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          author: {
             select: {
               id: true,
               name: true,
-              slug: true,
+              email: true,
             },
           },
-        },
-      },
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
         },
       },
     },
@@ -56,18 +75,27 @@ export async function GET(
   }
 
   return NextResponse.json({
-    id: post.id,
+    id: post.postId,
     title: post.title,
     slug: post.slug,
     excerpt: post.excerpt,
     content: post.content,
     coverImage: post.coverImage,
     language: post.language,
-    visibleAt: getVisibleAt(post).toISOString(),
+    visibleAt: getVisibleAt(post.post).toISOString(),
     readingTime: calcReadingTime(post.content),
-    category: post.category,
-    tags: post.tags.map((postTag) => postTag.tag),
-    author: post.author,
+    category: post.post.category?.translations[0]
+      ? {
+          id: post.post.category.id,
+          name: post.post.category.translations[0].name,
+          slug: post.post.category.translations[0].slug,
+        }
+      : null,
+    tags: post.post.tags.map((postTag) => ({
+      id: postTag.tag.id,
+      name: postTag.tag.translations[0]?.name ?? "",
+      slug: postTag.tag.translations[0]?.slug ?? "",
+    })),
+    author: post.post.author,
   });
 }
-
